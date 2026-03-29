@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abschlussprognose - AFG Dortmund</title>
+    <meta name="description" content="Offizielles Prognose-Tool der Anne-Frank-Gesamtschule Dortmund für die Jahrgänge 9 und 10.">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#e2e2e2">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .animate-in { animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        details > summary::-webkit-details-marker { display: none; }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-900">
+
+    <div class="max-w-4xl mx-auto space-y-6 py-8 px-4 sm:px-6 lg:px-8">
+        <div class="bg-[#e2e2e2] p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-300 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left space-y-4 sm:space-y-0 sm:space-x-6 relative overflow-hidden">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-0 -translate-y-1/2 opacity-[0.06] pointer-events-none" id="logo-bg"></div>
+            
+            <div class="shrink-0 bg-white/40 backdrop-blur-md rounded-2xl shadow-sm border border-white/60 z-10 flex items-center justify-center w-24 h-24 sm:w-32 sm:h-32 p-1.5 sm:p-2 text-slate-700" id="logo-box"></div>
+            <div class="flex-1 flex flex-col justify-center h-full pt-1 z-10 text-slate-900">
+                <h1 class="text-2xl sm:text-3xl font-black text-slate-800 leading-tight tracking-tight">Abschlussprognose</h1>
+                <p class="text-blue-800 font-bold text-lg sm:text-xl mt-0.5">Anne-Frank-Gesamtschule Dortmund</p>
+                <p class="text-slate-500 font-medium text-sm sm:text-base mt-2 flex items-center justify-center sm:justify-start gap-1.5">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                    Klasse 9 & 10 • Vorgaben nach APO-SI NRW
+                </p>
+            </div>
+        </div>
+
+        <div id="prognosis-banner" class="p-8 rounded-2xl shadow-md border-l-8 transition-all duration-300 relative overflow-hidden">
+        </div>
+
+        <div id="missing-section">
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden shadow-lg text-slate-900">
+            <div class="p-6 border-b border-slate-100 bg-slate-50/80 space-y-4">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-800">Zeugnisnoten eintragen</h3>
+                    <p class="text-sm text-slate-500 mt-1 text-balance">
+                        Stelle Fächer auf "-", wenn du sie nicht belegt hast.<br />
+                        Die "Weiteren Fächer" unten kannst du anklicken und umbenennen!
+                    </p>
+                </div>
+                <div class="flex items-center gap-3 pt-2">
+                    <span class="text-sm font-bold text-slate-700">Aktuelle Jahrgangsstufe:</span>
+                    <div class="flex bg-slate-200/80 p-1.5 rounded-xl w-fit shadow-inner border border-slate-200">
+                        <button id="btn-grade-9" onclick="setGradeLevel(9)" class="px-4 py-2 text-sm font-bold rounded-lg transition-all text-slate-500 hover:text-slate-700">Klasse 9</button>
+                        <button id="btn-grade-10" onclick="setGradeLevel(10)" class="px-4 py-2 text-sm font-bold rounded-lg transition-all bg-white text-blue-800 shadow-sm border border-slate-200">Klasse 10</button>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-200 text-slate-900" id="subjects-grid">
+                <div class="flex flex-col bg-white">
+                    <div class="bg-slate-50/50 border-b border-slate-100 p-4 sm:px-6 flex items-center gap-3">
+                        <div class="bg-blue-100 p-2 rounded-lg text-blue-700 shadow-sm border border-blue-200/50">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+                        </div>
+                        <div><h4 class="font-bold text-slate-800 leading-tight text-sm uppercase tracking-wide">Hauptfächer</h4></div>
+                    </div>
+                    <div class="p-4 sm:p-6 space-y-1" id="group-1-container"></div>
+                </div>
+                <div class="flex flex-col bg-slate-50/30">
+                    <div class="bg-slate-50/50 border-b border-slate-100 p-4 sm:px-6 flex items-center gap-3">
+                        <div class="bg-amber-100 p-2 rounded-lg text-amber-700 shadow-sm border border-amber-200/50">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/></svg>
+                        </div>
+                        <div><h4 class="font-bold text-slate-800 leading-tight text-sm uppercase tracking-wide">Nebenfächer</h4></div>
+                    </div>
+                    <div class="p-4 sm:p-6 space-y-1" id="group-2-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="rules-modal" class="fixed inset-0 z-50 items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 hidden animate-in text-slate-900">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-slate-200 relative">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.04] pointer-events-none z-0" id="logo-modal"></div>
+            <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/90 relative z-10 backdrop-blur-sm">
+                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <svg class="h-5 w-5 text-indigo-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a4 4 0 0 0-4-4H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a4 4 0 0 1 4-4h6z"/></svg>
+                    Voraussetzungen (APO-SI)
+                </h2>
+                <button onclick="toggleModal(false)" class="text-slate-400 hover:text-slate-700 p-1.5 bg-slate-200/50 rounded-lg shadow-sm">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-8 text-slate-700 relative z-10 text-sm">
+                <div class="space-y-2"><h3 class="font-bold text-emerald-800 bg-emerald-100 px-3 py-1.5 rounded-lg inline-block shadow-sm">MSA-Q (Qualifikation)</h3><ul class="list-disc pl-5 space-y-1.5 text-sm font-medium"><li>Mindestens 3 E-Kurse auf dem Zeugnis.</li><li>Hauptfächer: Mindestens Note 3 (im G-Kurs Note 2).</li><li>Nebenfächer: Mindestens Note 3.</li><li>Wichtig: Keine Note 5 oder 6 erlaubt.</li><li>Joker: Einmal Note 4 im Nebenfach ist frei.</li></ul></div>
+                <div class="space-y-2"><h3 class="font-bold text-blue-800 bg-blue-100 px-3 py-1.5 rounded-lg inline-block shadow-sm">MSA (Realschule)</h3><ul class="list-disc pl-5 space-y-1.5 text-sm font-medium"><li>Mindestens 2 E-Kurse auf dem Zeugnis.</li><li>Hauptfächer: Mindestens Note 4 (im G-Kurs Note 3).</li><li>Nebenfächer: Zweimal Note 3 nötig.</li><li>Wichtig: Keine Note 6 erlaubt.</li></ul></div>
+                <div class="space-y-2"><h3 class="font-bold text-amber-800 bg-amber-100 px-3 py-1.5 rounded-lg inline-block shadow-sm">EESA (HA 10)</h3><ul class="list-disc pl-5 space-y-1.5 text-sm font-medium"><li>Hauptfächer: Deutsch, Mathe, Arbeitslehre, Naturwissenschaften.</li><li>E-Kurs Bonus: Note 5 zählt wie im G-Kurs Note 4.</li><li>Max. eine Note 6 (Ausgleich durch Note 2 zwingend).</li><li>Insgesamt maximal 2 Defizite erlaubt.</li></ul></div>
+                <div class="space-y-2"><h3 class="font-bold text-red-800 bg-red-100 px-3 py-1.5 rounded-lg inline-block shadow-sm">ESA (HA 9)</h3><ul class="list-disc pl-5 space-y-1.5 text-sm font-medium"><li>Wird vergeben, wenn EESA-Bedingungen nicht erfüllt sind.</li></ul></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const afgLogoSVG = `<svg viewBox="0 0 300 120" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full scale-110"><path d="M 120 40 L 140 10 L 160 40" stroke-width="4" /><path d="M 135 40 L 145 5" stroke-width="4" /><path d="M 20 50 Q 150 35 280 50" stroke-width="6" /><path d="M 30 60 Q 150 45 270 60" stroke-width="3" /><path d="M 65 52 L 67 52 M 75 51 L 77 51 M 85 50 L 87 50" stroke-width="5" /><path d="M 110 48 L 112 48 M 120 47 L 122 47 M 130 46 L 132 46 M 140 46 L 142 46" stroke-width="5" /><path d="M 170 46 L 172 46 M 180 47 L 182 47 M 190 48 L 192 48 M 200 49 L 202 49" stroke-width="5" /><path d="M 10 95 L 290 95" stroke-width="4" /><path d="M 15 102 L 80 85" stroke-width="3" /><path d="M 55 60 L 50 105" stroke-width="14" /><path d="M 70 58 L 65 105" stroke-width="12" /><path d="M 100 55 L 95 110" stroke-width="8" /><path d="M 150 50 L 150 110" stroke-width="5" /><path d="M 190 52 L 190 110" stroke-width="5" /><path d="M 230 55 L 230 110" stroke-width="5" /><path d="M 260 58 L 260 110" stroke-width="5" /></svg>`;
+        
+        document.getElementById('logo-box').innerHTML = afgLogoSVG;
+        document.getElementById('logo-bg').innerHTML = afgLogoSVG.replace('scale-110', 'w-[24rem] sm:w-[32rem] text-slate-900 sm:-mr-16');
+        document.getElementById('logo-modal').innerHTML = afgLogoSVG.replace('scale-110', 'w-[28rem] sm:w-[40rem] text-slate-900');
+
+        let gradeLevel = 10;
+        let subjects = [
+            { id: 'd', name: 'Deutsch (D)', group: 1, hasKurs: true, kurs: 'E', grade: 3 },
+            { id: 'e', name: 'Englisch (E)', group: 1, hasKurs: true, kurs: 'E', grade: 3 },
+            { id: 'm', name: 'Mathematik (M)', group: 1, hasKurs: true, kurs: 'E', grade: 3 },
+            { id: 'wp', name: 'Wahlpflicht (WP)', group: 1, hasKurs: false, kurs: null, grade: 3 },
+            { id: 'ch', name: 'Chemie (CH)', group: 2, hasKurs: true, kurs: 'E', grade: 3 },
+            { id: 'ph', name: 'Physik (PH)', group: 2, hasKurs: false, kurs: null, grade: 3 },
+            { id: 'gl', name: 'Gesellschaftslehre (GL)', group: 2, hasKurs: false, kurs: null, grade: 3 },
+            { id: 'ww', name: 'Wirtschaft/Arbeitslehre (WW/AL)', group: 2, hasKurs: false, kurs: null, grade: 3 },
+            { id: 'sp', name: 'Sport (SP)', group: 2, hasKurs: false, kurs: null, grade: 3 },
+            { id: 'ku', name: 'Kunst (KU)', group: 2, hasKurs: false, kurs: null, grade: 3 },
+            { id: 'foe', name: 'Ergänzungsband (FÖ)', group: 2, hasKurs: false, kurs: null, grade: 3 },
+            { id: 'extra1', name: 'Weiteres Fach 1', group: 2, hasKurs: false, kurs: null, grade: 0, isCustomizable: true },
+            { id: 'extra2', name: 'Weiteres Fach 2', group: 2, hasKurs: false, kurs: null, grade: 0, isCustomizable: true },
+        ];
+
+        function renderSubjects() {
+            const g1 = document.getElementById('group-1-container');
+            const g2 = document.getElementById('group-2-container');
+            g1.innerHTML = ''; g2.innerHTML = '';
+
+            subjects.forEach(s => {
+                const isOff = s.grade === 0 ? 'opacity-50 grayscale' : '';
+                const nameHtml = s.isCustomizable 
+                    ? `<input type="text" value="${s.name}" data-id="${s.id}" data-field="name" class="subject-input text-sm font-semibold bg-transparent border-b border-dashed border-slate-400 focus:border-indigo-500 focus:outline-none w-full truncate ${s.grade === 0 ? 'text-slate-500' : 'text-slate-800'}" />`
+                    : `<label class="text-sm font-semibold text-slate-700 block truncate">${s.name}</label>`;
+                
+                const kursHtml = s.hasKurs 
+                    ? `<select data-id="${s.id}" data-field="kurs" ${s.grade === 0 ? 'disabled' : ''} class="subject-select text-sm rounded-lg font-bold px-2 py-2 outline-none transition-all cursor-pointer ${s.kurs === 'E' ? 'bg-indigo-100 text-indigo-800 border border-indigo-200' : 'bg-slate-200 text-slate-700 border border-slate-300'}">
+                         <option value="E" ${s.kurs === 'E' ? 'selected' : ''}>E-Kurs</option>
+                         <option value="G" ${s.kurs === 'G' ? 'selected' : ''}>G-Kurs</option>
+                       </select>`
+                    : '';
+
+                const gradeHtml = `
+                    <select data-id="${s.id}" data-field="grade" class="subject-select text-sm rounded-lg px-2 py-2 w-auto min-w-[4.5rem] text-center font-bold bg-white border border-slate-200 shadow-sm focus:border-indigo-500 outline-none transition-all cursor-pointer">
+                        <option value="0" ${s.grade === 0 ? 'selected' : ''}>-</option>
+                        ${[1, 2, 3, 4, 5, 6].map(g => `<option value="${g}" ${s.grade === g ? 'selected' : ''}>${g}</option>`).join('')}
+                    </select>
+                `;
+
+                const row = document.createElement('div');
+                row.id = `row-${s.id}`;
+                row.className = `flex items-center justify-between gap-2 p-3 hover:bg-slate-50 rounded-xl transition-all border border-transparent hover:border-slate-200 ${isOff}`;
+                row.innerHTML = `<div class="flex-1 min-w-0 pr-3 flex items-center">${nameHtml}</div><div class="flex items-center gap-2 shrink-0">${kursHtml}${gradeHtml}</div>`;
+                
+                if (s.group === 1) g1.appendChild(row); else g2.appendChild(row);
+            });
+        }
+
+        document.getElementById('subjects-grid').addEventListener('change', (e) => {
+            if (!e.target.classList.contains('subject-select')) return;
+            const id = e.target.dataset.id;
+            const field = e.target.dataset.field;
+            const val = e.target.value;
+            const subject = subjects.find(s => s.id === id);
+            
+            if (field === 'grade') subject.grade = parseInt(val);
+            if (field === 'kurs') subject.kurs = val;
+
+            updateRowUI(id);
+            updatePrognosis();
+        });
+
+        document.getElementById('subjects-grid').addEventListener('input', (e) => {
+            if (!e.target.classList.contains('subject-input')) return;
+            const id = e.target.dataset.id;
+            subjects.find(s => s.id === id).name = e.target.value;
+        });
+
+        function updateRowUI(id) {
+            const s = subjects.find(x => x.id === id);
+            const row = document.getElementById(`row-${id}`);
+            if (s.grade === 0) row.classList.add('opacity-50', 'grayscale');
+            else row.classList.remove('opacity-50', 'grayscale');
+
+            const kursSelect = row.querySelector(`select[data-field="kurs"]`);
+            if (kursSelect) {
+                kursSelect.disabled = (s.grade === 0);
+                kursSelect.className = `subject-select text-sm rounded-lg font-bold px-2 py-2 outline-none transition-all cursor-pointer ${s.kurs === 'E' ? 'bg-indigo-100 text-indigo-800 border border-indigo-200' : 'bg-slate-200 text-slate-700 border border-slate-300'}`;
+            }
+            const nameInput = row.querySelector(`input[data-field="name"]`);
+            if (nameInput) {
+                if (s.grade === 0) { nameInput.classList.add('text-slate-500'); nameInput.classList.remove('text-slate-800'); }
+                else { nameInput.classList.remove('text-slate-500'); nameInput.classList.add('text-slate-800'); }
+            }
+        }
+
+        function setGradeLevel(level) {
+            gradeLevel = level;
+            document.getElementById('btn-grade-9').className = `px-4 py-2 text-sm font-bold rounded-lg transition-all ${gradeLevel === 9 ? 'bg-white text-blue-800 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`;
+            document.getElementById('btn-grade-10').className = `px-4 py-2 text-sm font-bold rounded-lg transition-all ${gradeLevel === 10 ? 'bg-white text-blue-800 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`;
+            updatePrognosis();
+        }
+
+        function toggleModal(show) {
+            const modal = document.getElementById('rules-modal');
+            if (show) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+            else { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+        }
+
+        function consumeOneSubject(compsList, maxAllowedGrade) {
+            compsList.sort((a, b) => a.grade - b.grade);
+            const index = compsList.findIndex(c => c.grade <= maxAllowedGrade);
+            if (index !== -1) {
+                const usedSubject = compsList[index];
+                compsList.splice(index, 1);
+                return usedSubject;
+            }
+            return null;
+        }
+
+        function updatePrognosis() {
+            const activeSubjects = subjects.filter(s => s.grade > 0);
+            const eKurse = activeSubjects.filter(s => s.hasKurs && s.kurs === 'E');
+
+            const evalFORQ = () => {
+                let errors = [], compensations = [], crossCompUsed = false;
+                if (eKurse.length < 3) {
+                    let possibleEKurse = activeSubjects.filter(s => s.hasKurs && s.kurs === 'G').map(s => s.name);
+                    let altMsg = gradeLevel === 10 
+                        ? "Die Zuweisung in E-Kurse ist in Klasse 10 abgeschlossen. Die Anzahl deiner E-Kurse reicht für die Qualifikation leider nicht aus."
+                        : { instruction: "Du musst in weiteren Fächern den E-Kurs erreichen:", items: possibleEKurse.length > 0 ? possibleEKurse.map(n => `Erreiche den E-Kurs in ${n}`) : ["Kein Erreichen von E-Kursen mehr möglich."] };
+                    return { met: false, errors: [{ message: `Mindestens 3 E-Kurse benötigt (aktuell: ${eKurse.length}).`, alternatives: altMsg }], crossCompUsed };
+                }
+                let fg1Def = [], fg2Def = [], compsFG1 = [], compsFG2 = [], jokerUsed = false;
+                activeSubjects.forEach(s => {
+                    let req = s.hasKurs ? (s.kurs === 'G' ? 2 : 3) : 3;
+                    if (s.grade >= 5) errors.push({ message: `Eine ${s.grade} in ${s.name} verhindert die Qualifikation strikt.`, alternatives: { instruction: "Einzige Lösung:", items: [`Verbessere ${s.name} auf mindestens Note 4.`] } });
+                    else if (s.grade > req) {
+                        if (s.group === 1) fg1Def.push({ ...s, req });
+                        else if (s.grade === 4 && !jokerUsed) { jokerUsed = true; compensations.push({ message: `Nebenfach-Joker: Note 4 in ${s.name} bleibt unberücksichtigt.` }); }
+                        else fg2Def.push({ ...s, req });
+                    } else if (s.grade < req) {
+                        if (s.group === 1) compsFG1.push({ name: s.name, grade: s.grade, id: s.id }); 
+                        else compsFG2.push({ name: s.name, grade: s.grade, id: s.id });
+                    }
+                });
+
+                if (fg1Def.length > 1) errors.push({ message: "Zu viele Defizite: Maximal ein Defizit in den Hauptfächern erlaubt (und nur, wenn du es ausgleichen kannst).", alternatives: { instruction: "Behebe Defizite in:", items: fg1Def.map(d => `${d.name} auf Note ${d.req}`) } });
+                else if (fg1Def.length === 1) {
+                    let d = fg1Def[0];
+                    let c = consumeOneSubject(compsFG1, 2);
+                    if (!c) {
+                        let possible = activeSubjects.filter(s => s.group === 1 && s.id !== d.id).map(s => s.name);
+                        let ausgleichStr = possible.length > 0 ? `Erreiche eine Note 2 in: ${possible.join(', ')}` : "Erreiche eine Note 2 in einem anderen Hauptfach.";
+                        errors.push({ message: `Das Hauptfach ${d.name} benötigt eine Note 2 zum Ausgleich.`, alternatives: { instruction: "Du hast zwei Möglichkeiten:", items: [`Verbessere ${d.name} auf Note ${d.req}.`, ausgleichStr] } });
+                    }
+                    else compensations.push({ message: `Hauptfach-Defizit in ${d.name} durch ${c.name} (Note ${c.grade}) ausgeglichen.` });
+                }
+
+                fg2Def.forEach(d => {
+                    let c = consumeOneSubject(compsFG2, 2); 
+                    if (!c) { c = consumeOneSubject(compsFG1, 2); if (c) crossCompUsed = true; }
+                    
+                    if (!c) {
+                        let possible = activeSubjects.filter(s => s.id !== d.id).map(s => s.name);
+                        let ausgleichStr = possible.length > 0 ? `Erreiche eine Note 2 in: ${possible.join(', ')}` : "Erreiche eine Note 2 in einem anderen Fach zum Ausgleich.";
+                        errors.push({ message: `Das Nebenfach ${d.name} benötigt eine Note 2 zum Ausgleich.`, alternatives: { instruction: "Du hast zwei Möglichkeiten:", items: [`Verbessere ${d.name} auf Note ${d.req}.`, ausgleichStr] } });
+                    }
+                    else {
+                        compensations.push({ message: `Nebenfach-Ausgleich für ${d.name} durch ${c.name} (Note ${c.grade}) gesichert.` });
+                    }
+                });
+                return { met: errors.length === 0, errors, compensations, crossCompUsed };
+            };
+
+            const evalFOR = () => {
+                let errors = [], compensations = [], crossCompUsed = false;
+                if (eKurse.length < 2) {
+                    let altMsg = gradeLevel === 10 ? "Die Zuweisung in E-Kurse ist in Klasse 10 abgeschlossen." : { instruction: "Du musst in weiteren Fächern den E-Kurs erreichen:", items: activeSubjects.filter(s => s.hasKurs && s.kurs === 'G').map(s => s.name) };
+                    return { met: false, errors: [{ message: "Mindestens 2 E-Kurse für MSA benötigt.", alternatives: altMsg }] };
+                }
+                let fg1Def = [], fg2Def = [], compsFG1 = [], compsFG2 = [], threes = 0;
+                activeSubjects.forEach(s => {
+                    let req = (s.group === 1 && s.hasKurs && s.kurs === 'G') ? 3 : 4;
+                    if (s.grade === 6) errors.push({ message: `Eine 6 in ${s.name} schließt den MSA aus.`, alternatives: { instruction: "Lösung:", items: [`Verbessere ${s.name} auf mindestens Note 5.`] } });
+                    if (s.group === 2 && s.grade <= 3) threes++;
+                    if (s.grade > req) { if (s.group === 1) fg1Def.push({ ...s, req }); else fg2Def.push({ ...s, req }); }
+                    else if (s.grade < req) { 
+                        if (s.group === 1) compsFG1.push({ name: s.name, grade: s.grade, id: s.id }); 
+                        else compsFG2.push({ name: s.name, grade: s.grade, id: s.id }); 
+                    }
+                });
+                if (threes < 2) errors.push({ message: `Es fehlen ${2 - threes} befriedigende Leistungen (Note 3) in den Nebenfächern.`, alternatives: { instruction: "Mögliche Fächer zur Verbesserung:", items: activeSubjects.filter(s => s.group === 2 && s.grade > 3).map(s => `${s.name} auf mindestens Note 3`) } });
+                
+                if (fg1Def.length > 1 || fg2Def.length > 1) {
+                    errors.push({ message: "Zu viele Defizite: Maximal ein Defizit pro Fächergruppe erlaubt (und nur, wenn du es ausgleichen kannst).", alternatives: { instruction: "Verbessere die folgenden Fächer:", items: [...fg1Def, ...fg2Def].map(d => `${d.name} auf mindestens Note ${d.req}`) } });
+                } else {
+                    if (fg1Def.length === 1) { 
+                        let d = fg1Def[0];
+                        let c = consumeOneSubject(compsFG1, 3); 
+                        if (!c) {
+                            let possible = activeSubjects.filter(s => s.group === 1 && s.id !== d.id).map(s => s.name);
+                            let ausgleichStr = possible.length > 0 ? `Erreiche eine Note 3 in: ${possible.join(', ')}` : "Erreiche eine Note 3 in einem anderen Hauptfach.";
+                            errors.push({ message: `Kein Ausgleich für Hauptfach ${d.name} (Note ${d.grade}) vorhanden.`, alternatives: { instruction: "Möglichkeiten:", items: [`Verbessere ${d.name} auf Note ${d.req}.`, ausgleichStr] } });
+                        }
+                        else compensations.push({ message: `Hauptfach-Defizit in ${d.name} durch ${c.name} (Note ${c.grade}) ausgeglichen.` }); 
+                    }
+                    if (fg2Def.length === 1) { 
+                        let d = fg2Def[0];
+                        let c = consumeOneSubject(compsFG2, 3); 
+                        if (!c) { c = consumeOneSubject(compsFG1, 3); if (c) crossCompUsed = true; } 
+                        if (!c) {
+                            let possible = activeSubjects.filter(s => s.id !== d.id).map(s => s.name);
+                            let ausgleichStr = possible.length > 0 ? `Erreiche eine Note 3 in: ${possible.join(', ')}` : "Erreiche eine Note 3 in einem anderen Fach.";
+                            errors.push({ message: `Kein Ausgleich für Nebenfach ${d.name} (Note ${d.grade}) vorhanden.`, alternatives: { instruction: "Möglichkeiten:", items: [`Verbessere ${d.name} auf Note ${d.req}.`, ausgleichStr] } });
+                        }
+                        else compensations.push({ message: `Nebenfach-Ausgleich für ${d.name} durch ${c.name} (Note ${c.grade}) erfolgt.` }); 
+                    }
+                }
+                return { met: errors.length === 0, errors, compensations, crossCompUsed };
+            };
+
+            const evalHA10 = () => {
+                let errors = [], compensations = [], fg1Def = [], fg2Def = [], compsFG1 = [], compsFG2 = [], sixes = [];
+                let crossCompUsed = false;
+                activeSubjects.forEach(s => {
+                    const isEESAGroup1 = ['d', 'm', 'ww', 'ph', 'ch'].includes(s.id);
+                    const req = (s.hasKurs && s.kurs === 'E') ? 5 : 4;
+                    if (s.hasKurs && s.kurs === 'E' && s.grade === 5) {
+                        compensations.push({ message: `E-Kurs Bonus: Note 5 in ${s.name} zählt als erfüllt (kein Defizit).` });
+                    } else if (s.grade === 6) { sixes.push({ ...s, isEESAGroup1 }); }
+                    else if (s.grade > req) { if (isEESAGroup1) fg1Def.push({ ...s, req }); else fg2Def.push({ ...s, req }); }
+                    else if (s.grade < req) { 
+                        if (isEESAGroup1) compsFG1.push({ name: s.name, grade: s.grade, id: s.id }); 
+                        else compsFG2.push({ name: s.name, grade: s.grade, id: s.id }); 
+                    }
+                });
+                if (sixes.length > 1) errors.push({ message: "EESA nicht erreicht: Maximal eine Note 6 erlaubt.", alternatives: { instruction: "Behebe Note 6 in:", items: sixes.map(s => s.name) } });
+                let totalDefs = sixes.length + fg1Def.length + fg2Def.length;
+                if (totalDefs > 2) errors.push({ message: `EESA nicht erreicht: Insgesamt ${totalDefs} Defizite (max. 2 erlaubt).`, alternatives: { instruction: "Behebe Defizite in mindestens folgenden Fächern:", items: [...sixes, ...fg1Def, ...fg2Def].map(d => d.name) } });
+                
+                if (sixes.length === 1) {
+                    let s6 = sixes[0];
+                    let c = null;
+                    if (s6.isEESAGroup1) {
+                        c = consumeOneSubject(compsFG1, 2);
+                    } else {
+                        c = consumeOneSubject(compsFG2, 2); 
+                        if (!c) { c = consumeOneSubject(compsFG1, 2); if (c) crossCompUsed = true; }
+                    }
+                    
+                    if (!c) {
+                        let possible = s6.isEESAGroup1 
+                            ? activeSubjects.filter(s => ['d', 'm', 'ww', 'ph', 'ch'].includes(s.id) && s.id !== s6.id).map(s => s.name)
+                            : activeSubjects.filter(s => s.id !== s6.id).map(s => s.name);
+                        let ausgleichStr = possible.length > 0 ? `Erreiche eine Note 2 in: ${possible.join(', ')}` : "Erreiche eine Note 2 zum Ausgleich.";
+
+                        errors.push({ message: `Die Note 6 in ${s6.name} benötigt zwingend eine Note 2 zum Ausgleich ${s6.isEESAGroup1 ? 'in einem anderen Hauptfach' : ''}.`, alternatives: { instruction: "Zwei Möglichkeiten:", items: [`Verbessere ${s6.name} auf mindestens Note 5.`, ausgleichStr] } });
+                    }
+                    else compensations.push({ message: `Note 6 in ${s6.name} durch ${c.name} (Note ${c.grade}) ausgeglichen.` });
+                }
+                
+                fg1Def.forEach(d => {
+                    let c = consumeOneSubject(compsFG1, 3);
+                    if (!c) {
+                        let possible = activeSubjects.filter(s => ['d', 'm', 'ww', 'ph', 'ch'].includes(s.id) && s.id !== d.id).map(s => s.name);
+                        let ausgleichStr = possible.length > 0 ? `Erreiche eine Note 3 in: ${possible.join(', ')}` : "Erreiche eine Note 3 in einem anderen Hauptfach.";
+                        errors.push({ message: `Kein Ausgleich für Hauptfach ${d.name} (Note ${d.grade}) vorhanden.`, alternatives: { instruction: "Möglichkeiten:", items: [`Verbessere ${d.name} auf Note ${d.req}.`, ausgleichStr] } });
+                    }
+                    else compensations.push({ message: `Hauptfach-Defizit in ${d.name} durch ${c.name} (Note ${c.grade}) ausgeglichen.` });
+                });
+                
+                fg2Def.forEach(d => {
+                    let c = consumeOneSubject(compsFG2, 3); if (!c) { c = consumeOneSubject(compsFG1, 3); if (c) crossCompUsed = true; }
+                    if (!c) {
+                        let possible = activeSubjects.filter(s => s.id !== d.id).map(s => s.name);
+                        let ausgleichStr = possible.length > 0 ? `Erreiche eine Note 3 in: ${possible.join(', ')}` : "Erreiche eine Note 3 in einem anderen Fach.";
+                        errors.push({ message: `Kein Ausgleich für Nebenfach ${d.name} (Note ${d.grade}) vorhanden.`, alternatives: { instruction: "Möglichkeiten:", items: [`Verbessere ${d.name} auf Note ${d.req}.`, ausgleichStr] } });
+                    }
+                    else compensations.push({ message: `Nebenfach-Defizit in ${d.name} durch ${c.name} (Note ${c.grade}) ausgeglichen.` });
+                });
+                return { met: errors.length === 0, errors, compensations, crossCompUsed };
+            };
+
+            const q = evalFORQ(), f = evalFOR(), h = evalHA10();
+            let prog = {};
+            if (q.met) prog = { degree: "MSA-Q (Qualifikation)", subtext: "Berechtigt für die gymnasiale Oberstufe.", next: null, missing: [], compensations: q.compensations, color: 'border-emerald-500 text-emerald-900', bg: 'bg-emerald-50', crossCompUsed: q.crossCompUsed };
+            else if (f.met) prog = { degree: "MSA (Realschule)", subtext: "Fachoberschulreife (FOR) erreicht.", next: "MSA-Q (Qualifikation)", missing: q.errors, compensations: f.compensations, color: 'border-blue-500 text-blue-900', bg: 'bg-blue-50', crossCompUsed: f.crossCompUsed };
+            else if (h.met) prog = { degree: "EESA (HA 10)", subtext: "Erweiterter Erster Schulabschluss.", next: "MSA (Realschule)", missing: f.errors, compensations: h.compensations, color: 'border-amber-500 text-amber-900', bg: 'bg-amber-50', crossCompUsed: h.crossCompUsed };
+            else prog = { degree: "ESA (HA 9)", subtext: "Erster Schulabschluss erreicht. Anforderungen für EESA aktuell nicht erfüllt.", next: "EESA (HA 10)", missing: h.errors, compensations: [], color: 'border-red-500 text-red-900', bg: 'bg-red-50', crossCompUsed: false };
+
+            renderPrognosis(prog);
+        }
+
+        function renderPrognosis(prog) {
+            const banner = document.getElementById('prognosis-banner');
+            banner.className = `p-8 rounded-2xl shadow-md border-l-8 ${prog.bg} ${prog.color} transition-all duration-300 relative overflow-hidden`;
+            
+            let compsHtml = '';
+            if (prog.compensations.length > 0) {
+                compsHtml = `
+                    <div class="mt-6 pt-5 border-t border-black/10">
+                        <h3 class="text-sm font-bold flex items-center gap-2 mb-4">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+                            Berücksichtigte Regeln:
+                        </h3>
+                        <div class="grid gap-2.5">
+                            ${prog.compensations.map(c => `
+                                <div class="flex items-start gap-3 bg-white/40 p-3 rounded-xl border border-black/5">
+                                    <svg class="h-4 w-4 shrink-0 mt-0.5 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+                                    <span class="text-sm font-medium leading-relaxed">${c.message}</span>
+                                </div>
+                            `).join('')}
+                            ${prog.crossCompUsed ? `
+                                <div class="mt-2 flex items-start gap-3 p-3.5 bg-black/5 rounded-xl text-black/70 text-xs font-semibold border border-black/5 animate-in">
+                                    <svg class="h-4 w-4 shrink-0 mt-0.5 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                                    <p>Info: Ein Hauptfach hat hier ein Nebenfach gerettet. Nebenfächer dürfen jedoch keine Hauptfächer retten!</p>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+
+            banner.innerHTML = `
+                <div class="relative z-10 text-current">
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+                        <div>
+                            <h2 class="text-xs font-bold uppercase tracking-widest opacity-70 mb-1">Aktuelle Prognose</h2>
+                            <div class="text-2xl sm:text-4xl font-black flex items-center gap-3 mb-1 leading-tight">
+                                <div class="bg-white/40 p-1.5 rounded-full border border-black/5 shadow-sm">
+                                    <svg class="h-8 w-8 sm:h-9 sm:w-9 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                </div>
+                                ${prog.degree}
+                            </div>
+                            <p class="opacity-90 font-medium text-base sm:text-lg">${prog.subtext}</p>
+                        </div>
+                        <button onclick="toggleModal(true)" class="shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-sm transition-colors bg-white/40 hover:bg-white/60 text-current border border-black/10 shadow-sm">
+                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a4 4 0 0 0-4-4H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a4 4 0 0 1 4-4h6z"/></svg>
+                            Alle Abschlüsse anzeigen
+                        </button>
+                    </div>
+                    ${compsHtml}
+                </div>
+            `;
+
+            const missingSection = document.getElementById('missing-section');
+            if (prog.next) {
+                let missingListHtml = prog.missing.map(err => {
+                    let msg = typeof err === 'string' ? err : err.message;
+                    let alts = typeof err === 'string' ? null : err.alternatives;
+                    let altHtml = '';
+                    if (alts) {
+                        let altContent = typeof alts === 'string' 
+                            ? `<p class="font-bold text-red-900 text-[13px]">${alts}</p>`
+                            : `<div class="space-y-2"><p class="font-bold text-red-900 text-[13px]">${alts.instruction}</p><ul class="list-disc pl-5 space-y-1.5 text-red-800">${alts.items.map(it => `<li>${it}</li>`).join('')}</ul></div>`;
+                        
+                        altHtml = `
+                            <details class="mt-2 group">
+                                <summary class="text-xs text-red-700 hover:text-red-900 font-bold flex items-center gap-1 transition-colors underline decoration-2 underline-offset-2 cursor-pointer list-none select-none">
+                                    <span class="group-open:hidden">Wie kann ich das verbessern?</span>
+                                    <span class="hidden group-open:inline">Lösungsvorschläge ausblenden</span>
+                                    <svg class="h-3 w-3 group-open:rotate-180 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                                </summary>
+                                <div class="mt-3 p-4 bg-white/80 rounded-xl text-xs font-medium text-red-950 border border-red-200 shadow-sm animate-in">
+                                    ${altContent}
+                                </div>
+                            </details>
+                        `;
+                    }
+                    return `
+                        <div class="flex items-start gap-3 bg-red-50 p-4 rounded-2xl border border-red-100 shadow-sm transition-all hover:bg-red-50/80">
+                            <svg class="h-5 w-5 shrink-0 text-red-500 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            <div class="flex-1 text-slate-900">
+                                <span class="text-sm font-bold leading-relaxed">${msg}</span>
+                                ${altHtml}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                missingSection.innerHTML = `
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2 border-b border-slate-100 pb-3 mb-4">
+                            <div class="bg-amber-100 p-1.5 rounded-lg">
+                                <svg class="h-5 w-5 text-amber-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+                            </div>
+                            Was fehlt für ${prog.next}?
+                        </h3>
+                        <div class="grid gap-3">${missingListHtml}</div>
+                    </div>
+                `;
+            } else {
+                missingSection.innerHTML = '';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderSubjects();
+            updatePrognosis();
+        });
+
+    </script>
+</body>
+</html>
