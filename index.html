@@ -459,17 +459,14 @@
             } else { missingSection.innerHTML = ''; }
         }
 
-        // NEU: Globale Event-Listener statt Inline-HTML-Events (Macht den Code sicher vor CSP-Blockierungen)
         document.addEventListener('DOMContentLoaded', () => { 
             renderSubjects(); 
             updatePrognosis(); 
             
-            // Buttons für Klasse 9 und 10
             document.querySelectorAll('.grade-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => setGradeLevel(parseInt(e.target.dataset.level)));
             });
 
-            // Schließen-Button im Modal
             document.getElementById('close-modal-btn').addEventListener('click', () => toggleModal(false));
             
             // Delegation für den dynamisch generierten Modal-Button im Banner
