@@ -468,8 +468,7 @@
             });
 
             document.getElementById('close-modal-btn').addEventListener('click', () => toggleModal(false));
-            
-            // Delegation für den dynamisch generierten Modal-Button im Banner
+
             document.getElementById('prognosis-banner').addEventListener('click', (e) => {
                 if(e.target.closest('#open-modal-btn')) {
                     toggleModal(true);
