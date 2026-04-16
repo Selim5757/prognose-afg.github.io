@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abschlussprognose - Anne-Frank-Gesamtschule Dortmund</title>
+    <meta name="description" content="Offizielles Prognose-Tool der Anne-Frank-Gesamtschule Dortmund für die Jahrgänge 9 und 10.">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#e2e2e2">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:;">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+    <style>
+        body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;-webkit-tap-highlight-color:transparent}
+        .animate-in{animation:fadeIn .3s ease-out}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+        summary{list-style:none}
+        summary::-webkit-details-marker{display:none}
+        .touch-target{min-height:44px}
+        .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border-width:0}
+        @media print{
+            *{-webkit-print-color-adjust:exact !important;color-adjust:exact !important;print-color-adjust:exact !important}
+            body{background:#fff !important;color:#000 !important}
+            header{background:transparent !important;border:none !important;box-shadow:none !important;padding:0 !important;margin-bottom:2rem !important;display:block !important}
+            #logo-bg,#logo-box{display:none !important}
+            header h1{color:#000 !important;font-size:24pt !important;margin:0 !important}
+            header p{color:#333 !important;font-size:14pt !important;margin-top:5px !important}
+            #prognosis-banner{background:#fff !important;border:2px solid #000 !important;color:#000 !important;page-break-inside:avoid;border-radius:8px !important;padding:1.5rem !important}
+            #open-modal-btn{display:none !important}
+            .grade-btn.text-slate-500{display:none !important}
+            .grade-btn{border:none !important;box-shadow:none !important;background:transparent !important;color:#000 !important;font-size:12pt !important;padding:0 !important;margin-left:10px !important}
+            section{border:1px solid #ddd !important;box-shadow:none !important;page-break-inside:avoid}
+            .subject-select{appearance:none !important;-webkit-appearance:none !important;border:none !important;background:transparent !important;box-shadow:none !important;padding:0 !important;font-size:11pt !important;text-align:right !important;color:#000 !important}
+            input.subject-input{border:none !important;background:transparent !important;color:#000 !important}
+            details,footer{display:none !important}
+        }
+    </style>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-900 flex flex-col">
+    <noscript>
+        <div class="bg-red-600 text-white p-4 text-center font-bold text-sm" role="alert">
+            Dieses Tool benötigt JavaScript, um die Prognose lokal in Ihrem Browser berechnen zu können. Bitte aktivieren Sie JavaScript.
+        </div>
+    </noscript>
+    <main class="max-w-4xl mx-auto space-y-6 py-8 px-4 sm:px-6 lg:px-8 flex-grow w-full">
+        <header class="bg-[#e2e2e2] p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-300 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left space-y-4 sm:space-y-0 sm:space-x-6 relative overflow-hidden">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-0 -translate-y-1/2 opacity-[0.06] pointer-events-none" id="logo-bg" aria-hidden="true"></div>
+            <div class="shrink-0 bg-white/40 backdrop-blur-md rounded-2xl shadow-sm border border-white/60 z-10 flex items-center justify-center w-24 h-24 sm:w-32 sm:h-32 p-1.5 sm:p-2 text-slate-700" id="logo-box" aria-hidden="true"></div>
+            <div class="flex-1 flex flex-col justify-center h-full pt-1 z-10 text-slate-900">
+                <h1 class="text-2xl sm:text-3xl font-black text-slate-800 leading-tight tracking-tight">Abschlussprognose</h1>
+                <p class="text-blue-800 font-bold text-lg sm:text-xl mt-0.5">Anne-Frank-Gesamtschule Dortmund</p>
+                <p class="text-slate-500 font-medium text-sm sm:text-base mt-2 flex items-center justify-center sm:justify-start gap-1.5">
+                    <svg class="w-4 h-4" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                    Klasse 9 & 10 • Vorgaben nach APO-SI NRW
+                </p>
+            </div>
+        </header>
+        <section id="prognosis-banner" aria-live="polite" class="p-8 rounded-2xl shadow-md border-l-8 transition-all duration-300 relative overflow-hidden"></section>
+        <section id="missing-section" aria-live="polite"></section>
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden text-slate-900">
+            <form onsubmit="return false;" id="grades-form">
+                <div class="p-6 border-b border-slate-100 bg-slate-50/80 space-y-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800">Zeugnisnoten eintragen</h2>
+                        <p class="text-sm text-slate-500 mt-1 text-balance">
+                            Stelle Fächer auf "-", wenn du sie nicht belegt hast.<br />
+                            Die "Weiteren Fächer" unten kannst du anklicken und umbenennen.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 pt-2" role="group" aria-labelledby="grade-level-label">
+                        <span id="grade-level-label" class="text-sm font-bold text-slate-700">Aktuelle Jahrgangsstufe:</span>
+                        <div class="flex bg-slate-200/80 p-1.5 rounded-xl w-fit shadow-inner border border-slate-200">
+                            <button type="button" id="btn-grade-9" data-level="9" class="grade-btn touch-target px-4 py-2 text-sm font-bold rounded-lg transition-all text-slate-500 hover:text-slate-700">Klasse 9</button>
+                            <button type="button" id="btn-grade-10" data-level="10" class="grade-btn touch-target px-4 py-2 text-sm font-bold rounded-lg transition-all bg-white text-blue-800 shadow-sm border border-slate-200" aria-pressed="true">Klasse 10</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-200 text-slate-900" id="subjects-grid">
+                    <fieldset class="flex flex-col bg-white border-0 p-0 m-0">
+                        <legend class="sr-only">Hauptfächer</legend>
+                        <div class="bg-slate-50/50 border-b border-slate-100 p-4 sm:px-6 flex items-center gap-3" aria-hidden="true">
+                            <div class="relative bg-gradient-to-br from-blue-50 to-blue-100 p-2.5 rounded-xl text-blue-700 shadow-sm ring-2 ring-blue-500/20 ring-offset-1 border border-blue-200">
+                                <svg class="h-6 w-6 drop-shadow-sm" aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M19 2H6c-1.65 0-3 1.35-3 3v14c0 1.65 1.35 3 3 3h13c1.65 0 3-1.35 3-3V5c0-1.65-1.35-3-3-3zm-11 2H6c-.55 0-1 .45-1 1v14c0 .55.45 1 1 1h2V4zm12 15c0 .55-.45 1-1 1H10V4h9c.55 0 1 .45 1 1v14zM12 8h4v2h-4V8zm6 4h-6v2h6v-2zm-1.5 4H12v2h4.5v-2z" /></svg>
+                            </div>
+                            <div><h3 class="font-bold text-slate-800 leading-tight text-sm uppercase tracking-wide">Hauptfächer</h3></div>
+                        </div>
+                        <div class="p-4 sm:p-6 space-y-1" id="group-1-container"></div>
+                    </fieldset>
+                    <fieldset class="flex flex-col bg-slate-50/30 border-0 p-0 m-0">
+                        <legend class="sr-only">Nebenfächer</legend>
+                        <div class="bg-slate-50/50 border-b border-slate-100 p-4 sm:px-6 flex items-center gap-3" aria-hidden="true">
+                            <div class="relative bg-gradient-to-br from-blue-50 to-blue-100 p-2.5 rounded-xl text-blue-700 shadow-sm ring-2 ring-blue-500/20 ring-offset-1 border border-blue-200">
+                                <svg class="h-6 w-6 drop-shadow-sm" aria-hidden="true" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M26 24 V12 H38 V24 L52 50 C54 54 51 58 46 58 H18 C13 58 10 54 12 50 Z" /><path d="M17 40 H47" /><path d="M22 12 H42" /><circle cx="32" cy="50" r="2" fill="currentColor" /><circle cx="24" cy="46" r="1.5" fill="currentColor" /><circle cx="40" cy="48" r="1.5" fill="currentColor" /><circle cx="32" cy="6" r="3" fill="currentColor" stroke="none" /><circle cx="22" cy="10" r="2" fill="currentColor" stroke="none" /><circle cx="42" cy="12" r="2" fill="currentColor" stroke="none" /><circle cx="28" cy="16" r="1.5" fill="currentColor" stroke="none" /></svg>
+                            </div>
+                            <div><h3 class="font-bold text-slate-800 leading-tight text-sm uppercase tracking-wide">Nebenfächer</h3></div>
+                        </div>
+                        <div class="p-4 sm:p-6 space-y-1" id="group-2-container"></div>
+                    </fieldset>
+                </div>
+            </form>
+        </section>
+    </main>
+    <footer class="bg-slate-200 mt-auto py-8 border-t border-slate-300">
+        <div class="max-w-4xl mx-auto px-4 flex flex-col items-center justify-center space-y-4">
+            <div class="bg-white/60 p-4 rounded-xl border border-slate-300 shadow-sm max-w-2xl text-center">
+                <p class="text-sm text-slate-700 leading-relaxed">
+                    <strong class="text-slate-900 block mb-1">Wichtiger Hinweis:</strong> 
+                    Dieses Tool dient als Orientierungshilfe. Alle angezeigten Ergebnisse sind ohne Gewähr, da Fehler bei der Berechnung auftreten können. <br><br>
+                    Für verbindliche Auskünfte zu Abschlüssen sprich bitte immer mit deiner <strong>Klassenlehrkraft</strong> oder den <strong>Beratungslehrkräften</strong>.
+                </p>
+            </div>
+            <div class="flex gap-4 text-sm font-semibold text-slate-600 pt-2">
+                <a href="https://www.afg-do.de/impressum/index.php" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900 transition-colors">Impressum</a>
+                <span>&middot;</span>
+                <a href="https://www.afg-do.de/datenschutz/index.php" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900 transition-colors">Datenschutz</a>
+            </div>
+        </div>
+    </footer>
+    <div id="rules-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" class="fixed inset-0 z-50 items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 hidden animate-in text-slate-900">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-slate-200 relative">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.04] pointer-events-none z-0" id="logo-modal" aria-hidden="true"></div>
+            <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/90 relative z-10 backdrop-blur-sm">
+                <h2 id="modal-title" class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <svg class="h-5 w-5 text-indigo-600 shrink-0" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a4 4 0 0 0-4-4H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a4 4 0 0 1 4-4h6z"/></svg>
+                    Voraussetzungen (APO-SI)
+                </h2>
+                <button type="button" id="close-modal-btn" aria-label="Schließen" class="touch-target text-slate-400 hover:text-slate-700 p-1.5 bg-slate-200/50 rounded-lg shadow-sm">
+                    <svg class="h-5 w-5" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-6 text-slate-700 relative z-10 text-sm">
+                 <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100 text-indigo-900 shadow-sm relative">
+                    <svg class="h-5 w-5 absolute" style="top: 1rem; left: 1rem;" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <div class="text-center px-6">
+                        <h3 class="font-bold mb-1.5">Wichtige Grundregel</h3>
+                        <p class="font-medium leading-relaxed">Maximal 1 Hauptfach und 1 Nebenfach dürfen ausgeglichen werden.<br>Jede Ausgleichsnote darf nur für genau ein Defizit genutzt werden.</p>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="font-bold text-emerald-800 bg-emerald-100 px-3 py-1.5 rounded-lg inline-block shadow-sm">MSA-Q (Qualifikation)</h3>
+                    <ul class="list-disc pl-5 space-y-1.5 text-sm font-medium">
+                        <li><strong>Kurse:</strong> Mindestens 3 E-Kurse.</li>
+                        <li><strong>Noten:</strong> In allen Fächern mindestens Note 3 (im G-Kurs Note 2).</li>
+                        <li><strong>Defizite:</strong> Maximal 1 Defizit in den Hauptfächern und 1 in den Nebenfächern. Ein Ausgleich durch Note 2 ist erforderlich.</li>
+                        <li><strong>Ausschluss:</strong> Keine 5 in den Hauptfächern und generell keine 6 erlaubt.</li>
+                    </ul>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="font-bold text-blue-800 bg-blue-100 px-3 py-1.5 rounded-lg inline-block shadow-sm">MSA (Realschule)</h3>
+                    <ul class="list-disc pl-5 space-y-1.5 text-sm font-medium">
+                        <li><strong>Kurse:</strong> Mindestens 2 E-Kurse.</li>
+                        <li><strong>Noten:</strong> In allen Fächern mindestens Note 4 (im G-Kurs Note 3).</li>
+                        <li><strong>Sonderregel:</strong> Es werden mindestens zwei Noten 3 in den Nebenfächern benötigt.</li>
+                        <li><strong>Defizite:</strong> Maximal 1 Defizit in den Hauptfächern und 1 in den Nebenfächern (Ausgleich erforderlich).</li>
+                        <li><strong>Ausschluss:</strong> Generell keine 6 erlaubt.</li>
+                    </ul>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="font-bold text-amber-800 bg-amber-100 px-3 py-1.5 rounded-lg inline-block shadow-sm">EESA (HA 10)</h3>
+                    <ul class="list-disc pl-5 space-y-1.5 text-sm font-medium">
+                        <li><strong>Noten:</strong> In allen Fächern mindestens Note 4.</li>
+                        <li><strong>Vorteil:</strong> Eine Note 5 im E-Kurs wird wie eine Note 4 im G-Kurs gewertet.</li>
+                        <li><strong>Defizite:</strong> Maximal 2 Defizite insgesamt (davon höchstens 1 im Hauptfach). Ein Ausgleich ist erforderlich.</li>
+                        <li><strong>Ausschluss:</strong> Maximal eine 6 erlaubt (muss zwingend mit Note 2 ausgeglichen werden).</li>
+                    </ul>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="font-bold text-red-800 bg-red-100 px-3 py-1.5 rounded-lg inline-block shadow-sm">ESA (HA 9) & Abgang</h3>
+                    <ul class="list-disc pl-5 space-y-1.5 text-sm font-medium">
+                        <li><strong>Noten:</strong> In allen Fächern mindestens Note 4.</li>
+                        <li><strong>Defizite:</strong> Maximal 2 Defizite insgesamt (davon höchstens 1 im Hauptfach). Ein Ausgleich ist erforderlich.</li>
+                        <li><strong>Ausschluss:</strong> Generell keine 6 erlaubt.</li>
+                        <li><strong>Hinweis:</strong> Wer in Klasse 10 den EESA nicht erreicht, verlässt die Schule mit dem ESA.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <template id="tpl-prognosis-banner">
+        <div class="relative z-10 text-current">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+                <div>
+                    <h2 class="text-xs font-bold uppercase tracking-widest opacity-70 mb-1">Aktuelle Prognose</h2>
+                    <div class="text-2xl sm:text-4xl font-black flex items-center gap-3 mb-1 leading-tight">
+                        <div class="bg-white/40 p-1.5 rounded-full border border-black/5 shadow-sm">
+                            <svg class="h-8 w-8 sm:h-9 sm:w-9 shrink-0" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        </div>
+                        <span data-slot="degree"></span> 
+                    </div>
+                    <p data-slot="subtext" class="opacity-90 font-medium text-base sm:text-lg"></p>
+                </div>
+                <button type="button" id="open-modal-btn" class="touch-target shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-sm transition-colors bg-white/40 hover:bg-white/60 text-current border border-black/10 shadow-sm">
+                    <svg class="h-4 w-4 shrink-0" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a4 4 0 0 0-4-4H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a4 4 0 0 1 4-4h6z"/></svg>
+                    Alle Abschlüsse anzeigen
+                </button>
+            </div>
+            <div data-slot="comps-container"></div>
+        </div>
+    </template>
+<script>
+    const APO_RULES = { MANDATORY_SUBJECTS: ['d', 'e', 'm', 'wp'], MIN_SUBJECTS_REQUIRED: 10 };
+    const afgLogoSVG = `<svg viewBox="0 0 300 120" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full scale-110" aria-hidden="true"><path d="M 120 40 L 140 10 L 160 40" stroke-width="4" /><path d="M 135 40 L 145 5" stroke-width="4" /><path d="M 20 50 Q 150 35 280 50" stroke-width="6" /><path d="M 30 60 Q 150 45 270 60" stroke-width="3" /><path d="M 65 52 L 67 52 M 75 51 L 77 51 M 85 50 L 87 50" stroke-width="5" /><path d="M 110 48 L 112 48 M 120 47 L 122 47 M 130 46 L 132 46 M 140 46 L 142 46" stroke-width="5" /><path d="M 170 46 L 172 46 M 180 47 L 182 47 M 190 48 L 192 48 M 200 49 L 202 49" stroke-width="5" /><path d="M 10 95 L 290 95" stroke-width="4" /><path d="M 15 102 L 80 85" stroke-width="3" /><path d="M 55 60 L 50 105" stroke-width="14" /><path d="M 70 58 L 65 105" stroke-width="12" /><path d="M 100 55 L 95 110" stroke-width="8" /><path d="M 150 50 L 150 110" stroke-width="5" /><path d="M 190 52 L 190 110" stroke-width="5" /><path d="M 230 55 L 230 110" stroke-width="5" /><path d="M 260 58 L 260 110" stroke-width="5" /></svg>`;
+    document.getElementById('logo-box').innerHTML = afgLogoSVG;
+    document.getElementById('logo-bg').innerHTML = afgLogoSVG.replace('scale-110', 'w-[24rem] sm:w-[32rem] text-slate-900 sm:-mr-16');
+    document.getElementById('logo-modal').innerHTML = afgLogoSVG.replace('scale-110', 'w-[28rem] sm:w-[40rem] text-slate-900');
+    
+    let gradeLevel = 10;
+    let lastFocusedElement = null;
+    
+    let subjects = [
+        { id: 'd', name: 'Deutsch (D)', group: 1, hasKurs: true, kurs: 'E', grade: 3 },
+        { id: 'e', name: 'Englisch (E)', group: 1, hasKurs: true, kurs: 'E', grade: 3 },
+        { id: 'm', name: 'Mathematik (M)', group: 1, hasKurs: true, kurs: 'E', grade: 3 },
+        { id: 'wp', name: 'Wahlpflicht (WP)', group: 1, hasKurs: false, kurs: null, grade: 3 },
+        { id: 'ch', name: 'Chemie (CH)', group: 2, hasKurs: true, kurs: 'E', grade: 3 },
+        { id: 'ph', name: 'Physik (PH)', group: 2, hasKurs: false, kurs: null, grade: 3 },
+        { id: 'gl', name: 'Gesellschaftslehre (GL)', group: 2, hasKurs: false, kurs: null, grade: 3 },
+        { id: 'ww', name: 'Wirtschaft/Arbeitslehre (WW/AL)', group: 2, hasKurs: false, kurs: null, grade: 3 },
+        { id: 'sp', name: 'Sport (SP)', group: 2, hasKurs: false, kurs: null, grade: 3 },
+        { id: 'ku', name: 'Kunst (KU)', group: 2, hasKurs: false, kurs: null, grade: 3 },
+        { id: 'foe', name: 'Ergänzungsband (FÖ)', group: 2, hasKurs: false, kurs: null, grade: 3 },
+        { id: 'extra1', name: 'Weiteres Fach 1', group: 2, hasKurs: false, kurs: null, grade: 0, isCustomizable: true },
+        { id: 'extra2', name: 'Weiteres Fach 2', group: 2, hasKurs: false, kurs: null, grade: 0, isCustomizable: true },
+        { id: 'extra3', name: 'Weiteres Fach 3', group: 2, hasKurs: false, kurs: null, grade: 0, isCustomizable: true },
+    ];
+    function escapeHTML(str) { return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag])); }
+    function consumeOneSubject(compsList, maxAllowedGrade) {
+        compsList.sort((a, b) => b.grade - a.grade);
+        const index = compsList.findIndex(c => c.grade <= maxAllowedGrade);
+        if (index !== -1) { const usedSubject = compsList[index]; compsList.splice(index, 1); return usedSubject; }
+        return null;
+    }
+    function formatOder(list) {
+        if (!list || list.length === 0) return "";
+        if (list.length === 1) return list[0];
+        if (list.length === 2) return list.join(" oder ");
+        return list.slice(0, -1).join(", ") + " oder " + list[list.length - 1];
+    }
+    function formatUnd(list) {
+        if (!list || list.length === 0) return "";
+        if (list.length === 1) return list[0];
+        if (list.length === 2) return list.join(" und ");
+        return list.slice(0, -1).join(", ") + " und " + list[list.length - 1];
+    }
+    function getDynamicCompensationStrings(candidates, targetNote, isESAContext = false) {
+        let comps = [];
+        let m = candidates.filter(s => isESAContext ? s.isEESAGroup1 : s.group === 1).map(s => s.name);
+        let n = candidates.filter(s => isESAContext ? !s.isEESAGroup1 : s.group === 2).map(s => s.name);
+        if (m.length > 0) comps.push(`Erreiche eine Note ${targetNote} zum Ausgleich im Hauptfach (${formatOder(m)})`);
+        if (n.length > 0) comps.push(`Erreiche eine Note ${targetNote} zum Ausgleich im Nebenfach (${formatOder(n)})`);
+        return comps;
+    }
+    function getESACompensationStrings(candidates, targetNote) {
+        if (candidates.length > 0) return [`Erreiche eine Note ${targetNote} zum Ausgleich im Fach (${formatOder(candidates.map(s=>s.name))})`];
+        return [];
+    }
+    function renderSubjects() {
+        const g1 = document.getElementById('group-1-container'); const g2 = document.getElementById('group-2-container');
+        g1.innerHTML = ''; g2.innerHTML = '';
+        subjects.forEach(s => {
+            const isOff = s.grade === 0 ? 'bg-slate-50/50 border-dashed border-slate-300' : 'border-transparent hover:border-slate-200';
+            const safeName = escapeHTML(s.name);
+            const nameHtml = s.isCustomizable ? `<input type="text" value="${safeName}" aria-label="Name für ${safeName}" data-id="${s.id}" data-field="name" class="subject-input touch-target text-sm font-semibold bg-transparent border-b border-dashed border-slate-400 focus:border-indigo-500 focus:outline-none w-full truncate ${s.grade === 0 ? 'text-slate-500' : 'text-slate-800'}" />` : `<label class="text-sm font-semibold text-slate-700 block truncate" for="grade-${s.id}">${safeName}</label>`;
+            const kursHtml = s.hasKurs ? `<select data-id="${s.id}" aria-label="Kursniveau für ${safeName}" data-field="kurs" ${s.grade === 0 ? 'disabled' : ''} class="subject-select touch-target text-sm rounded-lg font-bold px-2 py-2 outline-none transition-all cursor-pointer ${s.kurs === 'E' ? 'bg-indigo-100 text-indigo-800 border border-indigo-200' : 'bg-slate-200 text-slate-700 border border-slate-300'}"><option value="E" ${s.kurs === 'E' ? 'selected' : ''}>E-Kurs</option><option value="G" ${s.kurs === 'G' ? 'selected' : ''}>G-Kurs</option></select>` : '';
+            const gradeHtml = `<select id="grade-${s.id}" data-id="${s.id}" aria-label="Note für ${safeName}" data-field="grade" class="subject-select touch-target text-sm rounded-lg px-2 py-2 w-auto min-w-[4.5rem] text-center font-bold bg-white border border-slate-200 shadow-sm focus:border-indigo-500 outline-none transition-all cursor-pointer"><option value="0" ${s.grade === 0 ? 'selected' : ''}>-</option>${[1, 2, 3, 4, 5, 6].map(g => `<option value="${g}" ${s.grade === g ? 'selected' : ''}>${g}</option>`).join('')}</select>`;
+            const row = document.createElement('div'); row.id = `row-${s.id}`; row.className = `flex items-center justify-between gap-2 p-3 hover:bg-slate-50 rounded-xl transition-all border ${isOff}`;
+            row.innerHTML = `<div class="flex-1 min-w-0 pr-3 flex items-center">${nameHtml}</div><div class="flex items-center gap-2 shrink-0">${kursHtml}${gradeHtml}</div>`;
+            if (s.group === 1) g1.appendChild(row); else g2.appendChild(row);
+        });
+    }
+    document.getElementById('subjects-grid').addEventListener('change', (e) => {
+        if (!e.target.classList.contains('subject-select')) return;
+        const id = e.target.dataset.id; const field = e.target.dataset.field; const val = e.target.value; const subject = subjects.find(s => s.id === id);
+        if (field === 'grade') subject.grade = parseInt(val); if (field === 'kurs') subject.kurs = val;
+        updateRowUI(id); updatePrognosis();
+    });
+    document.getElementById('subjects-grid').addEventListener('input', (e) => {
+        if (!e.target.classList.contains('subject-input')) return;
+        subjects.find(s => s.id === e.target.dataset.id).name = e.target.value;
+    });
+    function updateRowUI(id) {
+        const s = subjects.find(x => x.id === id); const row = document.getElementById(`row-${id}`);
+        if (s.grade === 0) { row.classList.remove('border-transparent', 'hover:border-slate-200'); row.classList.add('bg-slate-50/50', 'border-dashed', 'border-slate-300'); } else { row.classList.remove('bg-slate-50/50', 'border-dashed', 'border-slate-300'); row.classList.add('border-transparent', 'hover:border-slate-200'); }
+        const kursSelect = row.querySelector(`select[data-field="kurs"]`);
+        if (kursSelect) { kursSelect.disabled = (s.grade === 0); kursSelect.className = `subject-select touch-target text-sm rounded-lg font-bold px-2 py-2 outline-none transition-all cursor-pointer ${s.kurs === 'E' ? 'bg-indigo-100 text-indigo-800 border border-indigo-200' : 'bg-slate-200 text-slate-700 border border-slate-300'}`; }
+        const nameInput = row.querySelector(`input[data-field="name"]`);
+        if (nameInput) { if (s.grade === 0) { nameInput.classList.add('text-slate-500'); nameInput.classList.remove('text-slate-800'); } else { nameInput.classList.remove('text-slate-500'); nameInput.classList.add('text-slate-800'); } }
+    }
+    function setGradeLevel(level) {
+        gradeLevel = level;
+        document.getElementById('btn-grade-9').className = `grade-btn touch-target px-4 py-2 text-sm font-bold rounded-lg transition-all ${gradeLevel === 9 ? 'bg-white text-blue-800 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`;
+        document.getElementById('btn-grade-10').className = `grade-btn touch-target px-4 py-2 text-sm font-bold rounded-lg transition-all ${gradeLevel === 10 ? 'bg-white text-blue-800 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'}`;
+        updatePrognosis();
+    }
+    function toggleModal(show) {
+        const modal = document.getElementById('rules-modal');
+        if (show) { lastFocusedElement = document.activeElement; modal.classList.remove('hidden'); modal.classList.add('flex'); setTimeout(() => document.getElementById('close-modal-btn').focus(), 10); } else { modal.classList.add('hidden'); modal.classList.remove('flex'); if(lastFocusedElement) lastFocusedElement.focus(); }
+    }
+    function updatePrognosis() {
+        const activeSubjects = subjects.filter(s => s.grade > 0).map(s => ({...s, name: escapeHTML(s.name.replace(/\s*\([^)]*\)$/, ''))}));
+        const missingMandatory = APO_RULES.MANDATORY_SUBJECTS.filter(id => !activeSubjects.some(s => s.id === id));
+        if (missingMandatory.length > 0) { renderPrognosis({ degree: "Eingabe unvollständig", subtext: "Noten für Deutsch, Englisch, Mathematik und WP sind zwingend erforderlich.", next: null, missing: [{ message: "Du hast nicht alle Pflichtfächer belegt (Deutsch, Englisch, Mathematik und WP sind zwingend erforderlich)." }], compensations: [], color: 'border-slate-500 text-slate-900', bg: 'bg-slate-200', crossCompUsed: false, lbInfo: { nw: null, nwGrade: null, al: null, alGrade: null } }); return; }
+        if (activeSubjects.length < APO_RULES.MIN_SUBJECTS_REQUIRED) { renderPrognosis({ degree: "Zu wenige Fächer", subtext: `Bitte belege mindestens ${APO_RULES.MIN_SUBJECTS_REQUIRED} Fächer, um eine gültige Prognose zu erhalten.`, next: null, missing: [{ message: `Aktuell sind nur ${activeSubjects.length} Fächer benotet. Ein regulärer Abschluss erfordert in der Regel mehr Fächer.` }], compensations: [], color: 'border-slate-500 text-slate-900', bg: 'bg-slate-200', crossCompUsed: false, lbInfo: { nw: null, nwGrade: null, al: null, alGrade: null } }); return; }
+        const buildESASubjects = () => {
+            let nwSubs = activeSubjects.filter(s => ['ph', 'ch'].includes(s.id) || (s.isCustomizable && s.name.toLowerCase().includes('bio')));
+            let alSubs = activeSubjects.filter(s => ['ww'].includes(s.id) || (s.isCustomizable && (s.name.toLowerCase().includes('technik') || s.name.toLowerCase().includes('tc') || s.name.toLowerCase().includes('hauswirtschaft') || s.name.toLowerCase().includes('hw'))));
+            let esaSubs = activeSubjects.filter(s => !nwSubs.includes(s) && !alSubs.includes(s)).map(s => ({ ...s, isEESAGroup1: (s.id === 'd' || s.id === 'm') }));
+            let lbInfo = { nw: null, nwGrade: null, al: null, alGrade: null };
+            const calcLBGrade = (subs) => { let sum = subs.reduce((acc, val) => acc + val.grade, 0); let avg = sum / subs.length; if (avg - Math.floor(avg) === 0.5) return Math.floor(avg); return Math.round(avg); };
+            if (nwSubs.length > 0) { if (nwSubs.length === 1) esaSubs.push({ ...nwSubs[0], isEESAGroup1: true }); else { let grade = calcLBGrade(nwSubs); let names = nwSubs.map(x=>x.name.split(' (')[0]); let nameNW = `NW-Lernbereich (${names.join(', ')})`; esaSubs.push({ ...nwSubs[0], id: 'lb_nw', name: nameNW, isEESAGroup1: true, grade: grade, hasKurs: false, kurs: null }); if (!nwSubs.every(s => s.grade === nwSubs[0].grade)) { lbInfo.nw = names.join(' + '); lbInfo.nwGrade = grade; } } }
+            if (alSubs.length > 0) { if (alSubs.length === 1) esaSubs.push({ ...alSubs[0], isEESAGroup1: true }); else { let grade = calcLBGrade(alSubs); let names = alSubs.map(x=>x.name.split(' (')[0]); let nameAL = `AL-Lernbereich (${names.join(', ')})`; esaSubs.push({ ...alSubs[0], id: 'lb_al', name: nameAL, isEESAGroup1: true, grade: grade, hasKurs: false, kurs: null }); if (!alSubs.every(s => s.grade === alSubs[0].grade)) { lbInfo.al = names.join(' + '); lbInfo.alGrade = grade; } } }
+            esaSubs = esaSubs.map(s => ({ ...s, req: (s.hasKurs && s.kurs === 'E') ? 5 : 4 }));
+            return { esaSubs, lbInfo };
+        };
+        const getReqFORQ = (subj) => (subj.hasKurs && subj.kurs === 'G') ? 2 : 3;
+        const getReqFOR = (subj) => (subj.hasKurs && subj.kurs === 'G') ? 3 : 4;
+        const evalFORQ = () => {
+            let errors = []; let compensations = []; let crossCompUsed = false;
+            let localSubs = activeSubjects.map(s => ({...s, req: getReqFORQ(s)}));
+            let eCourses = localSubs.filter(s => s.hasKurs && s.kurs === 'E').sort((a, b) => a.grade - b.grade);
+            if (eCourses.length < 3) { let possibleAdvCourses = localSubs.filter(s => s.hasKurs && s.kurs === 'G').map(s => s.name); let altMsg = gradeLevel === 10 ? "Die Zuweisung in E-Kurse ist in Klasse 10 abgeschlossen. Ein nachträglicher Wechsel in E-Kurse ist nicht mehr möglich. Die Anzahl an E-Kursen reicht für die Qualifikation (MSA-Q) leider nicht aus." : { instruction: "Zwingend erforderlich (Wechsel in E-Kurse):", items: possibleAdvCourses.length > 0 ? [`Erreiche das E-Kurs-Niveau in (${formatOder(possibleAdvCourses)})`] : ["Kein Erreichen von weiteren E-Kursen mehr möglich"] }; return { met: false, errors: [{ message: `Für diesen Abschluss benötigst du mindestens 3 E-Kurse. Du hast aktuell jedoch nur ${eCourses.length} belegt.`, alternatives: altMsg }], crossCompUsed }; }
+            let defMain = []; let defSub = []; let compsMain = []; let compsSub = [];
+            localSubs.forEach(s => {
+                let origReq = s.req; let req = origReq; let effGrade = s.grade;
+                if (s.hasKurs && s.kurs === 'E') { let eIndex = eCourses.findIndex(e => e.id === s.id); if (eIndex >= 3) { req = 2; effGrade = Math.max(1, s.grade - 1); } }
+                let diff = effGrade - req; let isKiller = s.grade === 6 || (s.group === 1 && s.grade >= 5) || diff > 2;
+                if (diff > 0 || isKiller) { let deficitObj = { ...s, req: req, realReq: origReq, grade: effGrade, realGrade: s.grade, diff: Math.max(1, diff), isKiller: isKiller }; if (s.group === 1) defMain.push(deficitObj); else defSub.push(deficitObj); } else if (diff < 0) { if (s.group === 1) compsMain.push({ ...s }); else compsSub.push({ ...s }); }
+            });
+            let allDefs = [...defMain, ...defSub]; let hasKiller = allDefs.some(d => d.isKiller);
+            let totalSteps = allDefs.reduce((acc, d) => acc + d.diff, 0);
+            if (defMain.length > 1 || allDefs.length > 2 || totalSteps > 2 || hasKiller) {
+                let msgItems = []; 
+                let errorMsg = "";
+                if (hasKiller) {
+                    let killers = allDefs.filter(d => d.isKiller).map(d => `Note ${d.realGrade || d.grade} in ${d.name}`);
+                    errorMsg = `Ausschlusskriterium: Die ${formatUnd(killers)} ist für den MSA-Q nicht zulässig.`; 
+                } else if (defMain.length > 1) {
+                    errorMsg = "Du hast mehr als 1 Defizit in den Hauptfächern. Das ist für diesen Abschluss nicht erlaubt.";
+                } else if (defSub.length > 1) {
+                    errorMsg = "Du hast mehr als 1 Defizit in den Nebenfächern. Das ist für diesen Abschluss nicht erlaubt.";
+                } else {
+                    errorMsg = "Du hast die erlaubte Maximalanzahl an Defiziten überschritten.";
+                }
+                
+                if (allDefs.length > 0) {
+                    errorMsg += ` Deine aktuellen Defizite: ${allDefs.map(d => `${d.name} (Note ${d.realGrade || d.grade})`).join(", ")}.`;
+                }
+                
+                let combinations = [[]];
+                allDefs.forEach(d => { let nextCombs = []; for (let g = d.realReq; g <= d.realGrade; g++) { combinations.forEach(c => { nextCombs.push([...c, { ...d, simGrade: g }]); }); } combinations = nextCombs; });
+                let validCombs = [];
+                combinations.forEach(comb => {
+                    let simDefMain = 0; let simAllDefsCount = 0; let simTotalSteps = 0; let simHasKiller = false;
+                    comb.forEach(s => {
+                        let simReq = s.realReq; let simEffGrade = s.simGrade;
+                        if (s.hasKurs && s.kurs === 'E') { let eIndex = eCourses.findIndex(e => e.id === s.id); if (eIndex >= 3) { simReq = 2; simEffGrade = Math.max(1, s.simGrade - 1); } }
+                        let simDiff = simEffGrade - simReq;
+                        if (s.simGrade === 6 || (s.group === 1 && s.simGrade >= 5) || simDiff > 2) simHasKiller = true;
+                        if (simDiff > 0) { simTotalSteps += simDiff; simAllDefsCount++; if (s.group === 1) simDefMain++; }
+                    });
+                    if (!simHasKiller && simTotalSteps <= 2 && simDefMain <= 1 && simAllDefsCount <= 2 && !(simAllDefsCount > 1 && comb.some(s => (Math.max(1, (s.simGrade - s.realReq)) > 1)))) {
+                        let cM = [...compsMain]; let cS = [...compsSub]; let uncompMain = 0; let uncompSub = 0;
+                        comb.filter(s => s.group === 1 && s.simGrade > s.realReq).forEach(rm => { if(!consumeOneSubject(cM, 2)) uncompMain++; });
+                        comb.filter(s => s.group === 2 && s.simGrade > s.realReq).forEach(rs => {
+                            let simReq = rs.realReq; let simEffGrade = rs.simGrade;
+                            if (rs.hasKurs && rs.kurs === 'E') { let eIndex = eCourses.findIndex(e => e.id === rs.id); if (eIndex >= 3) { simReq = 2; simEffGrade = Math.max(1, rs.simGrade - 1); } }
+                            if (simEffGrade - simReq > 0) { if(!(consumeOneSubject(cS, 2) || consumeOneSubject(cM, 2))) uncompSub++; }
+                        });
+                        if (comb.some(s => s.simGrade < s.realGrade)) validCombs.push({ comb, uncompMain, uncompSub });
+                    }
+                });
+                let minimalCombs = validCombs.filter(vc1 => { return !validCombs.some(vc2 => { let strictlyBetterForStudent = false; let allEqualOrBetter = true; for (let i = 0; i < vc1.comb.length; i++) { if (vc2.comb[i].simGrade < vc1.comb[i].simGrade) { allEqualOrBetter = false; break; } if (vc2.comb[i].simGrade > vc1.comb[i].simGrade) strictlyBetterForStudent = true; } return allEqualOrBetter && strictlyBetterForStudent; }); });
+                minimalCombs.forEach(vc => {
+                    let parts = []; vc.comb.forEach(s => { if (s.simGrade < s.realGrade) parts.push(`Verbessere ${s.name} auf Note ${s.simGrade}`); });
+                    let baseFixText = parts.map((p, i) => i === 0 ? p : p.replace('Verbessere', 'verbessere')).join(' <strong>und</strong> ');
+                    let totalUncomp = vc.uncompMain + vc.uncompSub;
+                    if (totalUncomp === 0) { 
+                        if (!msgItems.includes(baseFixText)) msgItems.push(baseFixText); 
+                    } else if (totalUncomp === 1) {
+                        let candsM = localSubs.filter(s => s.group === 1 && s.grade === 3 && !vc.comb.some(c=>c.id===s.id && c.simGrade > c.realReq)).map(s=>s.name);
+                        let candsN = localSubs.filter(s => s.group === 2 && s.grade === 3 && !vc.comb.some(c=>c.id===s.id && c.simGrade > c.realReq)).map(s=>s.name);
+                        let candsMStr = candsM.length > 0 ? ` (${formatOder(candsM)})` : "";
+                        let candsNStr = candsN.length > 0 ? ` (${formatOder(candsN)})` : "";
+                        if (vc.uncompMain === 1 && candsM.length > 0) { 
+                            let str = `${baseFixText} <strong>und</strong> erreiche zusätzlich eine Note 2 zum Ausgleich im Hauptfach${candsMStr}`; 
+                            if (!msgItems.includes(str)) msgItems.push(str); 
+                        } else if (vc.uncompSub === 1) {
+                            if (candsM.length > 0) { let str = `${baseFixText} <strong>und</strong> erreiche zusätzlich eine Note 2 zum Ausgleich im Hauptfach${candsMStr}`; if (!msgItems.includes(str)) msgItems.push(str); }
+                            if (candsN.length > 0) { let str = `${baseFixText} <strong>und</strong> erreiche zusätzlich eine Note 2 zum Ausgleich im Nebenfach${candsNStr}`; if (!msgItems.includes(str)) msgItems.push(str); }
+                        }
+                    } else {
+                        let candsM = localSubs.filter(s => s.group === 1 && s.grade === 3 && !vc.comb.some(c=>c.id===s.id && c.simGrade > c.realReq)).map(s=>s.name);
+                        let candsN = localSubs.filter(s => s.group === 2 && s.grade === 3 && !vc.comb.some(c=>c.id===s.id && c.simGrade > c.realReq)).map(s=>s.name);
+                        let candsMStr = candsM.length > 0 ? ` (${formatOder(candsM)})` : "";
+                        let candsNStr = candsN.length > 0 ? ` (${formatOder(candsN)})` : "";
+                        let reqs = [];
+                        if (vc.uncompMain > 0) reqs.push(`${vc.uncompMain === 1 ? 'eine Note 2' : 'zwei Noten 2'} zum Ausgleich im Hauptfach${candsMStr}`);
+                        if (vc.uncompSub > 0) reqs.push(`${vc.uncompSub === 1 ? 'eine Note 2' : 'zwei Noten 2'} zum Ausgleich im Nebenfach${candsNStr}`);
+                        let str = `${baseFixText} <strong>und</strong> erreiche zusätzlich ${reqs.join(' und ')}`;
+                        if (!msgItems.includes(str)) msgItems.push(str);
+                    }
+                });
+                
+                if (msgItems.length > 0) {
+                    errors.push({ message: errorMsg, alternatives: { instruction: "Zwingend erforderlich (Defizite abbauen):", items: msgItems } });
+                } else {
+                    let reqParts = allDefs.map(d => `Verbessere ${d.name} auf Note ${d.realReq}`);
+                    if (reqParts.length > 0) {
+                        let finalReq = reqParts.map((p, i) => i === 0 ? p : p.replace('Verbessere', 'verbessere')).join(" <strong>und</strong> ");
+                        errors.push({ message: errorMsg, alternatives: { instruction: "Zwingend erforderlich:", items: [finalReq] } });
+                    }
+                }
+            } else {
+                defMain.forEach(d => { let c = consumeOneSubject(compsMain, 2); if (!c) { let possible = activeSubjects.filter(s => s.id !== d.id && s.grade === 3 && !allDefs.some(ad=>ad.id===s.id)); let comps = getDynamicCompensationStrings(possible, 2, false); errors.push({ message: `Für deine Note ${d.realGrade || d.grade} im Hauptfach ${d.name} ist kein erforderlicher Ausgleich vorhanden.`, alternatives: { instruction: "Mögliche Lösungswege:", items: [`Verbessere ${d.name} auf Note ${d.realReq || d.req}`, ...comps] } }); } else compensations.push({ message: `Das Defizit im Hauptfach ${d.name} (Note ${d.realGrade || d.grade}) wurde durch das Fach ${c.name} (Note ${c.grade}) ausgeglichen.` }); });
+                defSub.forEach(d => {
+                    let c = consumeOneSubject(compsSub, 2) || consumeOneSubject(compsMain, 2);
+                    if (!c) { let possible = activeSubjects.filter(s => s.id !== d.id && s.grade === 3 && !allDefs.some(ad=>ad.id===s.id)); let comps = getDynamicCompensationStrings(possible, 2, false); errors.push({ message: `Für deine Note ${d.realGrade || d.grade} im Nebenfach ${d.name} ist kein erforderlicher Ausgleich vorhanden.`, alternatives: { instruction: "Mögliche Lösungswege:", items: [`Verbessere ${d.name} auf Note ${d.realReq || d.req}`, ...comps] } }); } else { if (c.group === 1) crossCompUsed = true; if (d.diff === 2) compensations.push({ message: `Spezialfall nach §43 APO-SI: Das Zwei-Notenstufen-Defizit im Nebenfach ${d.name} (Note ${d.realGrade || d.grade}) wurde durch das Fach ${c.name} (Note ${c.grade}) ausgeglichen.` }); else compensations.push({ message: `Das Defizit im Nebenfach ${d.name} (Note ${d.realGrade || d.grade}) wurde durch das Fach ${c.name} (Note ${c.grade}) ausgeglichen.` }); }
+                });
+            }
+            return { met: errors.length === 0, errors, compensations, crossCompUsed };
+        };
+        const evalFOR = () => {
+            let errors = []; let compensations = []; let crossCompUsed = false;
+            let localSubs = activeSubjects.map(s => ({...s, req: getReqFOR(s)}));
+            let eCourses = localSubs.filter(s => s.hasKurs && s.kurs === 'E');
+            if (eCourses.length < 2) { let possibleAdvCourses = localSubs.filter(s => s.hasKurs && s.kurs === 'G').map(s => s.name); let altMsg = gradeLevel === 10 ? "Die Zuweisung in E-Kurse ist in Klasse 10 abgeschlossen. Ein nachträglicher Wechsel in E-Kurse ist nicht mehr möglich. Die Anzahl an E-Kursen reicht für den MSA leider nicht aus." : { instruction: "Zwingend erforderlich (Wechsel in E-Kurse):", items: possibleAdvCourses.length > 0 ? [`Erreiche das E-Kurs-Niveau in (${formatOder(possibleAdvCourses)})`] : ["Kein Erreichen von weiteren E-Kursen mehr möglich"] }; return { met: false, errors: [{ message: `Für diesen Abschluss benötigst du mindestens 2 E-Kurse. Du hast aktuell jedoch nur ${eCourses.length} belegt.`, alternatives: altMsg }] }; }
+            let defMain = []; let defSub = []; let compsMain = []; let compsSub = []; let threesCount = 0;
+            localSubs.forEach(s => { let req = s.req; let isKiller = s.grade === 6; if (s.group === 2 && s.grade <= 3) threesCount++; if (s.grade > req || isKiller) { let simGrade = s.grade === 6 ? 5 : s.grade; if (s.group === 1) defMain.push({ ...s, grade: simGrade, realGrade: s.grade, isKiller: isKiller }); else defSub.push({ ...s, grade: simGrade, realGrade: s.grade, isKiller: isKiller }); } else if (s.grade < req) { if (s.group === 1) compsMain.push({ ...s }); else compsSub.push({ ...s }); } });
+            compsSub.sort((a, b) => b.grade - a.grade); let baselineUsed = 0; while (baselineUsed < 2 && compsSub.length > 0) { compsSub.shift(); baselineUsed++; }
+            let missingThrees = Math.max(0, 2 - threesCount); let totalDefSub = defSub.length + missingThrees; let allDefs = [...defMain, ...defSub]; let hasKiller = allDefs.some(d => d.isKiller);
+            if (defMain.length > 1 || totalDefSub > 1 || hasKiller) {
+                let msgItems = []; 
+                let errorMsg = "";
+                if (hasKiller) {
+                    let killers = allDefs.filter(d => d.isKiller).map(d => `Note ${d.realGrade || d.grade} in ${d.name}`);
+                    errorMsg = `Ausschlusskriterium: Die ${formatUnd(killers)} ist für den MSA nicht zulässig.`; 
+                } else if (defMain.length > 1) {
+                    errorMsg = "Du hast mehr als 1 Defizit in den Hauptfächern. Das ist für diesen Abschluss nicht erlaubt.";
+                } else if (defSub.length > 1) {
+                    errorMsg = "Du hast mehr als 1 Defizit in den Nebenfächern. Das ist für diesen Abschluss nicht erlaubt.";
+                } else if (missingThrees > 1 && defSub.length === 0) {
+                    errorMsg = `Dir fehlen ${missingThrees} befriedigende Leistungen (Note 3) in den Nebenfächern.`;
+                } else if (missingThrees > 0 && defSub.length > 0) {
+                    errorMsg = "Du hast 1 Defizit und zu wenige befriedigende Leistungen (Note 3) in den Nebenfächern.";
+                } else {
+                    errorMsg = "Du hast die erlaubte Maximalanzahl an Defiziten überschritten.";
+                }
+                
+                if (allDefs.length > 0) {
+                    errorMsg += ` Deine aktuellen Defizite: ${allDefs.map(d => `${d.name} (Note ${d.realGrade || d.grade})`).join(", ")}.`;
+                }
+                
+                let combinations = [[]]; allDefs.forEach(d => { let nextCombs = []; for (let g = d.req; g <= d.realGrade; g++) { combinations.forEach(c => { nextCombs.push([...c, { ...d, simGrade: g }]); }); } combinations = nextCombs; });
+                let validCombs = [];
+                combinations.forEach(comb => {
+                    let simDefMain = 0; let simDefSub = 0; let simThreesCount = threesCount; let simHasKiller = false;
+                    comb.forEach(s => { let simDiff = s.simGrade - s.req; if (s.simGrade === 6) simHasKiller = true; if (s.group === 2) { if (s.realGrade <= 3) simThreesCount--; if (s.simGrade <= 3) simThreesCount++; } if (simDiff > 0) { if (s.group === 1) simDefMain++; else simDefSub++; } });
+                    let simMissingThrees = Math.max(0, 2 - simThreesCount);
+                    if (!simHasKiller && simDefMain <= 1 && (simDefSub + simMissingThrees) <= 1) {
+                        let cM = [...compsMain]; let cS = [...compsSub]; let uncompMain = 0; let uncompSub = 0; let uncompThrees = 0;
+                        comb.filter(s => s.group === 1 && s.simGrade > s.req).forEach(rm => { if(!consumeOneSubject(cM, 3)) uncompMain++; });
+                        comb.filter(s => s.group === 2 && s.simGrade > s.req).forEach(rs => { if(!(consumeOneSubject(cS, 3) || consumeOneSubject(cM, 3))) uncompSub++; });
+                        if (simMissingThrees > 0) { if(!(consumeOneSubject(cS, 3) || consumeOneSubject(cM, 3))) uncompThrees++; }
+                        if (comb.some(s => s.simGrade < s.realGrade)) validCombs.push({ comb, uncompMain, uncompSub, uncompThrees });
+                    }
+                });
+                if (validCombs.length === 0 && missingThrees > 0 && defMain.length <= 1 && defSub.length <= 1 && !hasKiller) {
+                    let possible = localSubs.filter(s => s.group === 2 && s.grade === s.req + 1 && !allDefs.some(ad=>ad.id===s.id));
+                    if (possible.length > 0) {
+                        let cM = [...compsMain]; let cS = [...compsSub]; let uncompMain = 0; let uncompSub = 0;
+                        defMain.forEach(rm => { if(!consumeOneSubject(cM, 3)) uncompMain++; }); defSub.forEach(rs => { if(!(consumeOneSubject(cS, 3) || consumeOneSubject(cM, 3))) uncompSub++; });
+                        
+                        let possibleStr = ` (${formatOder(possible.map(s=>s.name))})`;
+                        let baseFixText = `Erreiche ${missingThrees === 1 ? 'eine zusätzliche Note 3' : 'zwei zusätzliche Noten 3'} im Nebenfach${possibleStr}`;
+                        
+                        if (uncompMain === 0 && uncompSub === 0) msgItems.push(baseFixText); 
+                        else {
+                            let candsM = localSubs.filter(s => s.group === 1 && s.grade === 4 && !allDefs.some(ad=>ad.id===s.id)).map(s=>s.name);
+                            let candsN = localSubs.filter(s => s.group === 2 && s.grade === 4 && !allDefs.some(ad=>ad.id===s.id)).map(s=>s.name);
+                            let candsMStr = candsM.length > 0 ? ` (${formatOder(candsM)})` : "";
+                            let candsNStr = candsN.length > 0 ? ` (${formatOder(candsN)})` : "";
+                            
+                            if (uncompMain === 1 && uncompSub === 0 && candsM.length > 0) msgItems.push(`${baseFixText} <strong>und</strong> erreiche zusätzlich eine Note 3 zum Ausgleich im Hauptfach${candsMStr}`);
+                            else if (uncompMain === 0 && uncompSub === 1) {
+                                if (candsM.length > 0) msgItems.push(`${baseFixText} <strong>und</strong> erreiche zusätzlich eine Note 3 zum Ausgleich im Hauptfach${candsMStr}`);
+                                if (candsN.length > 0) msgItems.push(`${baseFixText} <strong>und</strong> erreiche zusätzlich eine Note 3 zum Ausgleich im Nebenfach${candsNStr}`);
+                            }
+                            else {
+                                let candsM = localSubs.filter(s => s.group === 1 && s.grade === 4 && !allDefs.some(ad=>ad.id===s.id)).map(s=>s.name);
+                                let candsN = localSubs.filter(s => s.group === 2 && s.grade === 4 && !allDefs.some(ad=>ad.id===s.id)).map(s=>s.name);
+                                let candsMStr = candsM.length > 0 ? ` (${formatOder(candsM)})` : "";
+                                let candsNStr = candsN.length > 0 ? ` (${formatOder(candsN)})` : "";
+                                let reqs = [];
+                                if (uncompMain > 0) reqs.push(`${uncompMain === 1 ? 'eine Note 3' : 'zwei Noten 3'} zum Ausgleich im Hauptfach${candsMStr}`);
+                                if (uncompSub > 0) reqs.push(`${uncompSub === 1 ? 'eine Note 3' : 'zwei Noten 3'} zum Ausgleich im Nebenfach${candsNStr}`);
+                                let str = `${baseFixText} <strong>und</strong> erreiche zusätzlich ${reqs.join(' und ')}`;
+                                if (!msgItems.includes(str)) msgItems.push(str);
+                            }
+                        }
+                    }
+                } else {
+                    let minimalCombs = validCombs.filter(vc1 => { return !validCombs.some(vc2 => { let strictlyBetterForStudent = false; let allEqualOrBetter = true; for (let i = 0; i < vc1.comb.length; i++) { if (vc2.comb[i].simGrade < vc1.comb[i].simGrade) { allEqualOrBetter = false; break; } if (vc2.comb[i].simGrade > vc1.comb[i].simGrade) strictlyBetterForStudent = true; } return allEqualOrBetter && strictlyBetterForStudent; }); });
+                    minimalCombs.forEach(vc => {
+                        let parts = []; vc.comb.forEach(s => { if (s.simGrade < s.realGrade) parts.push(`Verbessere ${s.name} auf Note ${s.simGrade}`); });
+                        let baseFixText = parts.map((p, i) => i === 0 ? p : p.replace('Verbessere', 'verbessere')).join(' <strong>und</strong> ');
+                        let totalUncomp = vc.uncompMain + vc.uncompSub + vc.uncompThrees;
+                        if (totalUncomp === 0) { 
+                            if (!msgItems.includes(baseFixText)) msgItems.push(baseFixText); 
+                        } else if (totalUncomp === 1) {
+                            let candsM = localSubs.filter(s => s.group === 1 && s.grade === 4 && !vc.comb.some(c=>c.id===s.id && c.simGrade > c.req)).map(s=>s.name);
+                            let candsN = localSubs.filter(s => s.group === 2 && s.grade === 4 && !vc.comb.some(c=>c.id===s.id && c.simGrade > c.req)).map(s=>s.name);
+                            let candsMStr = candsM.length > 0 ? ` (${formatOder(candsM)})` : "";
+                            let candsNStr = candsN.length > 0 ? ` (${formatOder(candsN)})` : "";
+                            
+                            if (vc.uncompMain === 1 && candsM.length > 0) msgItems.push(`${baseFixText} <strong>und</strong> erreiche zusätzlich eine Note 3 zum Ausgleich im Hauptfach${candsMStr}`);
+                            else if (vc.uncompSub === 1 || vc.uncompThrees === 1) {
+                                let isThrees = vc.uncompThrees === 1;
+                                if (candsM.length > 0 && !isThrees) msgItems.push(`${baseFixText} <strong>und</strong> erreiche zusätzlich eine Note 3 zum Ausgleich im Hauptfach${candsMStr}`);
+                                if (candsN.length > 0) {
+                                    if (isThrees) msgItems.push(`${baseFixText} <strong>und</strong> erreiche zusätzlich eine Note 3 im Nebenfach${candsNStr}`);
+                                    else msgItems.push(`${baseFixText} <strong>und</strong> erreiche zusätzlich eine Note 3 zum Ausgleich im Nebenfach${candsNStr}`);
+                                }
+                            }
+                        } else {
+                            let candsM = localSubs.filter(s => s.group === 1 && s.grade === 4 && !vc.comb.some(c=>c.id===s.id && c.simGrade > c.req)).map(s=>s.name);
+                            let candsN = localSubs.filter(s => s.group === 2 && s.grade === 4 && !vc.comb.some(c=>c.id===s.id && c.simGrade > c.req)).map(s=>s.name);
+                            let candsMStr = candsM.length > 0 ? ` (${formatOder(candsM)})` : "";
+                            let candsNStr = candsN.length > 0 ? ` (${formatOder(candsN)})` : "";
+                            let reqs = [];
+                            if (vc.uncompMain > 0) reqs.push(`${vc.uncompMain === 1 ? 'eine Note 3' : 'zwei Noten 3'} zum Ausgleich im Hauptfach${candsMStr}`);
+                            if (vc.uncompSub > 0) reqs.push(`${vc.uncompSub === 1 ? 'eine Note 3' : 'zwei Noten 3'} zum Ausgleich im Nebenfach${candsNStr}`);
+                            if (vc.uncompThrees > 0 && vc.uncompSub === 0) reqs.push(`${vc.uncompThrees === 1 ? 'eine Note 3' : 'zwei Noten 3'} im Nebenfach${candsNStr}`);
+                            let str = `${baseFixText} <strong>und</strong> erreiche zusätzlich ${reqs.join(' und ')}`;
+                            if (!msgItems.includes(str)) msgItems.push(str);
+                        }
+                    });
+                }
+                
+                if (msgItems.length > 0) {
+                    errors.push({ message: errorMsg, alternatives: { instruction: "Zwingend erforderlich (Defizite abbauen):", items: msgItems } });
+                } else {
+                    let reqParts = [];
+                    if (allDefs.length > 0) {
+                        reqParts.push(...allDefs.map(d => `Verbessere ${d.name} auf Note ${d.req}`));
+                    }
+                    if (missingThrees > 0) {
+                        let possible = localSubs.filter(s => s.group === 2 && s.grade === 4 && !allDefs.some(ad=>ad.id===s.id)).map(s=>s.name);
+                        let possibleStr = possible.length > 0 ? ` (${formatOder(possible)})` : "";
+                        reqParts.push(`Erreiche ${missingThrees === 1 ? 'eine zusätzliche Note 3' : 'zwei zusätzliche Noten 3'} im Nebenfach${possibleStr}`);
+                    }
+                    if (reqParts.length > 0) {
+                        let finalReq = reqParts.map((p, i) => i === 0 ? p : p.charAt(0).toLowerCase() + p.slice(1)).join(" <strong>und</strong> ");
+                        errors.push({ message: errorMsg, alternatives: { instruction: "Zwingend erforderlich:", items: [finalReq.charAt(0).toUpperCase() + finalReq.slice(1)] } });
+                    }
+                }
+            } else {
+                defMain.forEach(d => { let c = consumeOneSubject(compsMain, 3); if (!c) { let possible = localSubs.filter(s => s.id !== d.id && s.grade === 4 && !allDefs.some(ad=>ad.id===s.id)); let comps = getDynamicCompensationStrings(possible, 3, false); errors.push({ message: `Für deine Note ${d.realGrade || d.grade} im Hauptfach ${d.name} ist kein erforderlicher Ausgleich vorhanden.`, alternatives: { instruction: "Mögliche Lösungswege:", items: [`Verbessere ${d.name} auf Note ${d.req}`, ...comps] } }); } else compensations.push({ message: `Das Defizit im Hauptfach ${d.name} (Note ${d.realGrade || d.grade}) wurde durch das Fach ${c.name} (Note ${c.grade}) ausgeglichen.` }); });
+                if (totalDefSub === 1) {
+                    let c = consumeOneSubject(compsSub, 3); if (!c) { c = consumeOneSubject(compsMain, 3); if (c) crossCompUsed = true; }
+                    if (defSub.length === 1) { let d = defSub[0]; if (!c) { let possible = localSubs.filter(s => s.id !== d.id && s.grade === 4 && !allDefs.some(ad=>ad.id===s.id)); let comps = getDynamicCompensationStrings(possible, 3, false); errors.push({ message: `Für deine Note ${d.realGrade || d.grade} im Nebenfach ${d.name} ist kein erforderlicher Ausgleich vorhanden.`, alternatives: { instruction: "Mögliche Lösungswege:", items: [`Verbessere ${d.name} auf Note ${d.req}`, ...comps] } }); } else compensations.push({ message: `Das Defizit im Nebenfach ${d.name} (Note ${d.realGrade || d.grade}) wurde durch das Fach ${c.name} (Note ${c.grade}) ausgeglichen.` }); }
+                    else if (missingThrees === 1) { 
+                        if (!c) { 
+                            let possible = localSubs.filter(s => s.group === 2 && s.grade === 4 && !allDefs.some(ad=>ad.id===s.id)); 
+                            let possibleStr = possible.length > 0 ? ` (${formatOder(possible.map(x=>x.name))})` : "";
+                            let comps = [`Erreiche eine zusätzliche Note 3 im Nebenfach${possibleStr}`]; 
+                            errors.push({ message: `Es fehlt 1 befriedigende Leistung (Note 3) in den Nebenfächern (kein Ausgleich vorhanden).`, alternatives: { instruction: "Mögliche Lösungswege:", items: comps } }); 
+                        } else compensations.push({ message: `Eine fehlende befriedigende Leistung (Note 3) in den Nebenfächern wurde durch das Fach ${c.name} (Note ${c.grade}) ausgeglichen.` }); 
+                    }
+                }
+            }
+            return { met: errors.length === 0, errors, compensations, crossCompUsed };
+        };
+        const evalHA10 = () => {
+            let errors = []; let compensations = []; let defMain = []; let defSub = []; let compsMain = []; let compsSub = []; let sixes = []; let crossCompUsed = false;
+            const { esaSubs, lbInfo } = buildESASubjects();
+            esaSubs.forEach(s => {
+                const req = (s.hasKurs && s.kurs === 'E') ? 5 : 4;
+                if (s.hasKurs && s.kurs === 'E' && s.grade === 5) compensations.push({ message: `E-Kurs-Regelung: Deine Note 5 im Fach ${s.name} (E-Kurs) entspricht einer Note 4 im G-Kurs und gilt für diesen Abschluss daher nicht als Defizit.` }); else if (s.grade === 6) sixes.push({ ...s, req: req }); else if (s.grade > req) { if (s.isEESAGroup1) defMain.push({ ...s, req: req }); else defSub.push({ ...s, req: req }); } else if (s.grade < req) { if (s.isEESAGroup1) compsMain.push({ ...s }); else compsSub.push({ ...s }); }
+            });
+            let totalDefMain = sixes.filter(s => s.isEESAGroup1).length + defMain.length; let totalDefSub = sixes.filter(s => !s.isEESAGroup1).length + defSub.length;
+            if (sixes.length > 1) { errors.push({ message: "Ausschlusskriterium: Es ist maximal eine Note 6 für den EESA (HA 10) erlaubt.", alternatives: { instruction: "Mögliche Lösungswege:", items: [`Verbessere ${sixes.map(s=>s.name).join(" oder ")} auf Note 5`] } }); }
+            if (totalDefMain > 1 || (totalDefMain + totalDefSub) > 2) {
+                let msgItems = []; let allDefs = [...sixes, ...defMain, ...defSub]; 
+                let errorMsg = "";
+                let actualSixes = allDefs.filter(d => d.grade === 6); 
+                if (actualSixes.length === 1) {
+                    errorMsg = `Ausschlusskriterium: Deine Note 6 in ${actualSixes[0].name} in Kombination mit weiteren Defiziten ist nicht zulässig.`;
+                } else if (totalDefMain > 1) {
+                    errorMsg = "Du hast mehr als 1 Defizit in den Hauptfächern. Das ist für diesen Abschluss nicht erlaubt.";
+                } else {
+                    errorMsg = "Du hast die erlaubte Maximalanzahl an Defiziten überschritten.";
+                }
+                
+                if (allDefs.length > 0) {
+                    errorMsg += ` Deine aktuellen Defizite: ${allDefs.map(d => `${d.name} (Note ${d.realGrade || d.grade})`).join(", ")}.`;
+                }
+                
+                let combinations = [[]]; allDefs.forEach(d => { let nextCombs = []; for (let g = d.req; g <= d.grade; g++) { combinations.forEach(c => { nextCombs.push([...c, { ...d, simGrade: g }]); }); } combinations = nextCombs; });
+                let validCombs = [];
+                combinations.forEach(comb => {
+                    let simDefMain = 0; let simDefSteps = 0; let simHasKiller = false;
+                    comb.forEach(s => { if (s.simGrade === 6) simHasKiller = true; if (s.simGrade > s.req) { simDefSteps++; if (s.isEESAGroup1) simDefMain++; } });
+                    if (!simHasKiller && simDefMain <= 1 && simDefSteps <= 2) {
+                        let cM = [...compsMain]; let cS = [...compsSub]; let uncompMain = 0; let uncompSub = 0;
+                        comb.filter(s => s.isEESAGroup1 && s.simGrade > s.req).forEach(rm => { if(!consumeOneSubject(cM, 3)) uncompMain++; });
+                        comb.filter(s => !s.isEESAGroup1 && s.simGrade > s.req).forEach(rs => { if(!(consumeOneSubject(cS, 3) || consumeOneSubject(cM, 3))) uncompSub++; });
+                        if (comb.some(s => s.simGrade < s.grade)) validCombs.push({ comb, uncompMain, uncompSub });
+                    }
+                });
+                let minimalCombs = validCombs.filter(vc1 => { return !validCombs.some(vc2 => { let strictlyBetterForStudent = false; let allEqualOrBetter = true; for (let i = 0; i < vc1.comb.length; i++) { if (vc2.comb[i].simGrade < vc1.comb[i].simGrade) { allEqualOrBetter = false; break; } if (vc2.comb[i].simGrade > vc1.comb[i].simGrade) strictlyBetterForStudent = true; } return allEqualOrBetter && strictlyBetterForStudent; }); });
+                minimalCombs.forEach(vc => {
+                    let parts = []; vc.comb.forEach(s => { if (s.simGrade < s.grade) parts.push(`Verbessere ${s.name} auf Note ${s.simGrade}`); });
+                    let baseFixText = parts.map((p, i) => i === 0 ? p : p.replace('Verbessere', 'verbessere')).join(' <strong>und</strong> ');
+                    let totalUncomp = vc.uncompMain + vc.uncompSub;
+                    if (totalUncomp === 0) { 
+                        if (!msgItems.includes(baseFixText)) msgItems.push(baseFixText); 
+                    } else if (totalUncomp === 1) {
+                        let candsM = esaSubs.filter(s => s.isEESAGroup1 && s.grade === 4 && !vc.comb.some(c=>c.id===s.id && c.simGrade > c.req)).map(s=>s.name);
+                        let candsN = esaSubs.filter(s => !s.isEESAGroup1 && s.grade === 4 && !vc.comb.some(c=>c.id===s.id && c.simGrade > c.req)).map(s=>s.name);
+                        let candsMStr = candsM.length > 0 ? ` (${formatOder(candsM)})` : "";
+                        let candsNStr = candsN.length > 0 ? ` (${formatOder(candsN)})` : "";
+                        if (vc.uncompMain === 1 && candsM.length > 0) msgItems.push(`${baseFixText} <strong>und</strong> erreiche zusätzlich eine Note 3 zum Ausgleich im Hauptfach${candsMStr}`);
+                        else if (vc.uncompSub === 1) {
+                            if (candsM.length > 0) msgItems.push(`${baseFixText} <strong>und</strong> erreiche zusätzlich eine Note 3 zum Ausgleich im Hauptfach${candsMStr}`);
+                            if (candsN.length > 0) msgItems.push(`${baseFixText} <strong>und</strong> erreiche zusätzlich eine Note 3 zum Ausgleich im Nebenfach${candsNStr}`);
+                        }
+                    } else {
+                        let candsM = esaSubs.filter(s => s.isEESAGroup1 && s.grade === 4 && !vc.comb.some(c=>c.id===s.id && c.simGrade > c.req)).map(s=>s.name);
+                        let candsN = esaSubs.filter(s => !s.isEESAGroup1 && s.grade === 4 && !vc.comb.some(c=>c.id===s.id && c.simGrade > c.req)).map(s=>s.name);
+                        let candsMStr = candsM.length > 0 ? ` (${formatOder(candsM)})` : "";
+                        let candsNStr = candsN.length > 0 ? ` (${formatOder(candsN)})` : "";
+                        let reqs = [];
+                        if (vc.uncompMain > 0) reqs.push(`${vc.uncompMain === 1 ? 'eine Note 3' : 'zwei Noten 3'} zum Ausgleich im Hauptfach${candsMStr}`);
+                        if (vc.uncompSub > 0) reqs.push(`${vc.uncompSub === 1 ? 'eine Note 3' : 'zwei Noten 3'} zum Ausgleich im Nebenfach${candsNStr}`);
+                        let str = `${baseFixText} <strong>und</strong> erreiche zusätzlich ${reqs.join(' und ')}`;
+                        if (!msgItems.includes(str)) msgItems.push(str);
+                    }
+                });
+                
+                if (msgItems.length > 0) {
+                    errors.push({ message: errorMsg, alternatives: { instruction: "Zwingend erforderlich (Defizite abbauen):", items: msgItems } });
+                } else {
+                    let reqParts = allDefs.map(d => `Verbessere ${d.name} auf Note ${d.req}`);
+                    if (reqParts.length > 0) {
+                        let finalReq = reqParts.map((p, i) => i === 0 ? p : p.replace('Verbessere', 'verbessere')).join(" <strong>und</strong> ");
+                        errors.push({ message: errorMsg, alternatives: { instruction: "Zwingend erforderlich:", items: [finalReq.charAt(0).toUpperCase() + finalReq.slice(1)] } });
+                    }
+                }
+            } else {
+                if (sixes.length === 1) {
+                    let s6 = sixes[0]; let c = s6.isEESAGroup1 ? consumeOneSubject(compsMain, 2) : (consumeOneSubject(compsSub, 2) || consumeOneSubject(compsMain, 2)); if (!s6.isEESAGroup1 && c && c.group === 1) crossCompUsed = true;
+                    if (!c) { let candidates = esaSubs.filter(s => s.id !== s6.id && s.grade >= 3 && !defMain.some(ad=>ad.id===s.id) && !defSub.some(ad=>ad.id===s.id)); errors.push({ message: `Für deine Note 6 im Fach ${s6.name} ist kein erforderlicher Ausgleich vorhanden.`, alternatives: { instruction: "Mögliche Lösungswege:", items: [`Verbessere ${s6.name} auf mindestens Note 5`, ...getDynamicCompensationStrings(candidates, 2, true)] } }); } else compensations.push({ message: `Das Defizit im Fach ${s6.name} (Note 6) wurde durch das Fach ${c.name} (Note ${c.grade}) ausgeglichen.` });
+                }
+                defMain.forEach(d => { let c = consumeOneSubject(compsMain, 3); if (!c) { let possible = esaSubs.filter(s => s.id !== d.id && s.grade === 4 && !defMain.some(ad=>ad.id===s.id) && !defSub.some(ad=>ad.id===s.id)); errors.push({ message: `Für deine Note ${d.grade} im Hauptfach ${d.name} ist kein erforderlicher Ausgleich vorhanden.`, alternatives: { instruction: "Mögliche Lösungswege:", items: [`Verbessere ${d.name} auf Note ${d.req}`, ...getDynamicCompensationStrings(possible, 3, true)] } }); } else compensations.push({ message: `Das Defizit im Hauptfach ${d.name} (Note ${d.grade}) wurde durch das Fach ${c.name} (Note ${c.grade}) ausgeglichen.` }); });
+                defSub.forEach(d => { let c = consumeOneSubject(compsSub, 3) || consumeOneSubject(compsMain, 3); if (c && c.group === 1) crossCompUsed = true; if (!c) { let possible = esaSubs.filter(s => s.id !== d.id && s.grade === 4 && !defMain.some(ad=>ad.id===s.id) && !defSub.some(ad=>ad.id===s.id)); errors.push({ message: `Für deine Note ${d.grade} im Nebenfach ${d.name} ist kein erforderlicher Ausgleich vorhanden.`, alternatives: { instruction: "Mögliche Lösungswege:", items: [`Verbessere ${d.name} auf Note ${d.req}`, ...getDynamicCompensationStrings(possible, 3, true)] } }); } else compensations.push({ message: `Das Defizit im Nebenfach ${d.name} (Note ${d.grade}) wurde durch das Fach ${c.name} (Note ${c.grade}) ausgeglichen.` }); });
+            }
+            return { met: errors.length === 0, errors, compensations, crossCompUsed, lbInfo };
+        };
+        const evalESA = () => {
+            let errors = []; let compensations = []; let defMain = []; let defSub = []; let comps = []; let sixes = [];
+            const { esaSubs, lbInfo } = buildESASubjects();
+            esaSubs.forEach(s => { let req = s.req; if (s.grade === 6) sixes.push({ ...s }); else if (s.grade > req) { if (s.isEESAGroup1) defMain.push({ ...s }); else defSub.push({ ...s }); } else if (s.grade < req) comps.push({ ...s }); });
+            let totalDefMain = sixes.filter(s => s.isEESAGroup1).length + defMain.length; let totalDefSub = sixes.filter(s => !s.isEESAGroup1).length + defSub.length; let allDefs = [...sixes, ...defMain, ...defSub];
+            if (sixes.length > 0) errors.push({ message: "Ausschlusskriterium: Für den ESA (HA 9) ist generell keine Note 6 erlaubt (Ausnahmen obliegen ausschließlich der Zeugniskonferenz).", alternatives: { instruction: "Mögliche Lösungswege:", items: [`Verbessere ${sixes.map(s=>s.name).join(" und ")} auf Note 5`] } });
+            if (totalDefMain > 1 || (totalDefMain + totalDefSub) > 2) {
+                let errorMsg = "";
+                if (totalDefMain > 1) {
+                    errorMsg = "Du hast mehr als 1 Defizit in den Hauptfächern. Das ist für diesen Abschluss nicht erlaubt.";
+                } else {
+                    errorMsg = "Du hast die erlaubte Maximalanzahl an Defiziten überschritten.";
+                }
+                
+                if (allDefs.length > 0) {
+                    errorMsg += ` Deine aktuellen Defizite: ${allDefs.map(d => `${d.name} (Note ${d.realGrade || d.grade})`).join(", ")}.`;
+                }
+                
+                let msgItems = []; let combinations = [[]]; allDefs.forEach(d => { let nextCombs = []; for (let g = d.req; g <= d.grade; g++) { combinations.forEach(c => { nextCombs.push([...c, { ...d, simGrade: g }]); }); } combinations = nextCombs; });
+                let validCombs = [];
+                combinations.forEach(comb => {
+                    let simDefMain = 0; let simDefSteps = 0; let simHasKiller = false;
+                    comb.forEach(s => { if (s.simGrade === 6) simHasKiller = true; if (s.simGrade > s.req) { simDefSteps++; if (s.isEESAGroup1) simDefMain++; } });
+                    if (!simHasKiller && simDefMain <= 1 && simDefSteps <= 2) { let cM = [...comps]; let uncompAll = 0; comb.filter(s => s.simGrade > s.req).forEach(rm => { if(!consumeOneSubject(cM, 4)) uncompAll++; }); if (comb.some(s => s.simGrade < s.grade)) validCombs.push({ comb, uncompAll }); }
+                });
+                let minimalCombs = validCombs.filter(vc1 => { return !validCombs.some(vc2 => { let strictlyBetterForStudent = false; let allEqualOrBetter = true; for (let i = 0; i < vc1.comb.length; i++) { if (vc2.comb[i].simGrade < vc1.comb[i].simGrade) { allEqualOrBetter = false; break; } if (vc2.comb[i].simGrade > vc1.comb[i].simGrade) strictlyBetterForStudent = true; } return allEqualOrBetter && strictlyBetterForStudent; }); });
+                minimalCombs.forEach(vc => {
+                    let parts = []; vc.comb.forEach(s => { if (s.simGrade < s.grade) parts.push(`Verbessere ${s.name} auf Note ${s.simGrade}`); });
+                    let baseFixText = parts.map((p, i) => i === 0 ? p : p.replace('Verbessere', 'verbessere')).join(' <strong>und</strong> ');
+                    if (vc.uncompAll === 0) { 
+                        if (!msgItems.includes(baseFixText)) msgItems.push(baseFixText); 
+                    } else if (vc.uncompAll === 1) { 
+                        let cands = esaSubs.filter(s => s.grade === 3 && !vc.comb.some(c=>c.id===s.id && c.simGrade > c.req)).map(s=>s.name); 
+                        let candsStr = cands.length > 0 ? ` (${formatOder(cands)})` : "";
+                        msgItems.push(`${baseFixText} <strong>und</strong> erreiche zusätzlich eine Note 3 zum Ausgleich im Fach${candsStr}`); 
+                    } else {
+                        let cands = esaSubs.filter(s => s.grade === 3 && !vc.comb.some(c=>c.id===s.id && c.simGrade > c.req)).map(s=>s.name);
+                        let candsStr = cands.length > 0 ? ` (${formatOder(cands)})` : "";
+                        let str = `${baseFixText} <strong>und</strong> erreiche zusätzlich zwei Noten 3 zum Ausgleich im Fach${candsStr}`;
+                        if (!msgItems.includes(str)) msgItems.push(str);
+                    }
+                });
+                
+                if (msgItems.length > 0) {
+                    errors.push({ message: errorMsg, alternatives: { instruction: "Zwingend erforderlich (Defizite abbauen):", items: msgItems } });
+                } else {
+                    let reqParts = allDefs.map(d => `Verbessere ${d.name} auf Note ${d.req}`);
+                    if (reqParts.length > 0) {
+                        let finalReq = reqParts.map((p, i) => i === 0 ? p : p.replace('Verbessere', 'verbessere')).join(" <strong>und</strong> ");
+                        errors.push({ message: errorMsg, alternatives: { instruction: "Zwingend erforderlich:", items: [finalReq] } });
+                    }
+                }
+            } else {
+                [...defMain, ...defSub].forEach(d => { let c = consumeOneSubject(comps, 4); if (!c) { let candidates = esaSubs.filter(s => s.id !== d.id && s.grade === 5 && !defMain.some(ad=>ad.id===s.id) && !defSub.some(ad=>ad.id===s.id)); errors.push({ message: `Für deine Note ${d.grade} im Fach ${d.name} ist kein erforderlicher Ausgleich vorhanden.`, alternatives: { instruction: "Mögliche Lösungswege:", items: [`Verbessere ${d.name} auf Note ${d.req}`, ...getESACompensationStrings(candidates, 3)] } }); } else compensations.push({ message: `Das Defizit im Fach ${d.name} (Note ${d.grade}) wurde durch das Fach ${c.name} (Note ${c.grade}) ausgeglichen.` }); });
+            }
+            return { met: errors.length === 0, errors, compensations, crossCompUsed: false, lbInfo };
+        };
+        const q = evalFORQ(); const f = evalFOR(); const h = evalHA10(); const e = evalESA();
+        let prog = {};
+        if (q.met) prog = { degree: "MSA-Q (Qualifikation)", subtext: "Berechtigt für den Besuch der gymnasialen Oberstufe.", next: null, missing: [], compensations: q.compensations, color: 'border-emerald-500 text-emerald-900', bg: 'bg-emerald-50', crossCompUsed: q.crossCompUsed, lbInfo: {nw: null, nwGrade: null, al: null, alGrade: null} };
+        else if (f.met) prog = { degree: "MSA (Realschule)", subtext: "Fachoberschulreife (FOR) erreicht.", next: "MSA-Q (Qualifikation)", missing: q.errors, compensations: f.compensations, color: 'border-blue-500 text-blue-900', bg: 'bg-blue-50', crossCompUsed: f.crossCompUsed, lbInfo: {nw: null, nwGrade: null, al: null, alGrade: null} };
+        else if (h.met) prog = { degree: "EESA (HA 10)", subtext: "Erweiterter Erster Schulabschluss erreicht.", next: "MSA (Realschule)", missing: f.errors, compensations: h.compensations, color: 'border-amber-500 text-amber-900', bg: 'bg-amber-50', crossCompUsed: h.crossCompUsed, lbInfo: h.lbInfo };
+        else if (gradeLevel === 10) prog = { degree: "Abgang mit ESA (HA 9)", subtext: "Anforderungen für EESA (HA 10) nicht erfüllt. Die Schule wird regulär mit dem in Klasse 9 erworbenen ESA verlassen.", next: "EESA (HA 10)", missing: h.errors, compensations: [], color: 'border-red-500 text-red-900', bg: 'bg-red-50', crossCompUsed: false, lbInfo: h.lbInfo };
+        else if (e.met) prog = { degree: "ESA (HA 9)", subtext: "Erster Schulabschluss erreicht. Leistungsvoraussetzungen für höhere Abschlüsse aktuell nicht erfüllt.", next: "EESA (HA 10)", missing: h.errors, compensations: e.compensations, color: 'border-yellow-500 text-yellow-900', bg: 'bg-yellow-50', crossCompUsed: e.crossCompUsed, lbInfo: e.lbInfo };
+        else prog = { degree: "Kein Abschluss / Abgang", subtext: "Die Leistungsvoraussetzungen für den ESA sind aktuell nicht erfüllt. Eine Versetzung ist ausgeschlossen.", next: "ESA (HA 9)", missing: e.errors, compensations: [], color: 'border-red-500 text-red-900', bg: 'bg-red-50', crossCompUsed: false, lbInfo: e.lbInfo };
+        
+        renderPrognosis(prog);
+    }
+    function renderPrognosis(prog) {
+        const banner = document.getElementById('prognosis-banner');
+        banner.className = `p-8 rounded-2xl shadow-md border-l-8 ${prog.bg} ${prog.color} transition-all duration-300 relative overflow-hidden`;
+        banner.innerHTML = '';
+        const template = document.getElementById('tpl-prognosis-banner').content.cloneNode(true);
+        template.querySelector('[data-slot="degree"]').textContent = prog.degree;
+        template.querySelector('[data-slot="subtext"]').textContent = prog.subtext;
+        const compsContainer = template.querySelector('[data-slot="comps-container"]');
+        let compsHtml = '';
+        if (prog.compensations.length === 0 && !["Kein Abschluss / Abgang", "Abgang mit ESA (HA 9)", "ESA (HA 9)", "Zu wenige Fächer", "Eingabe unvollständig"].includes(prog.degree)) {
+             compsHtml = `<div class="mt-6 pt-5 border-t border-black/10"><h3 class="text-sm font-bold flex items-center gap-2 mb-3 text-emerald-700"><svg class="h-5 w-5" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Alle Voraussetzungen erfüllt</h3><div class="flex items-start gap-3 bg-white/50 p-3.5 rounded-xl border border-black/5"><p class="text-sm font-medium leading-relaxed opacity-90">Die Leistungsvoraussetzungen für diesen Abschluss wurden regulär erbracht.</p></div></div>`;
+        } else if (prog.compensations.length > 0) {
+            compsHtml = `<div class="mt-6 pt-5 border-t border-black/10"><h3 class="text-sm font-bold flex items-center gap-2 mb-4"><svg class="h-5 w-5" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>Berücksichtigte Ausgleichsregelungen:</h3><div class="grid gap-2.5">${prog.compensations.map(c => `<div class="flex items-start gap-3 bg-white/40 p-3 rounded-xl border border-black/5"><svg class="h-4 w-4 shrink-0 mt-0.5 text-emerald-600" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg><span class="text-sm font-medium leading-relaxed">${c.message}</span></div>`).join('')}${prog.crossCompUsed ? `<div class="mt-2 flex items-start gap-3 p-3.5 bg-black/5 rounded-xl text-black/70 text-xs font-semibold border border-black/5 animate-in"><svg class="h-4 w-4 shrink-0 mt-0.5 opacity-70" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><p>Hinweis zur APO-SI: Ein Defizit in einem Nebenfach wurde durch eine gute Leistung in einem Hauptfach ausgeglichen. Bitte beachte, dass ein umgekehrter Ausgleich (ein Nebenfach gleicht ein Hauptfach aus) generell nicht zulässig ist.</p></div>` : ''}</div></div>`;
+        }
+        if (prog.lbInfo && (prog.lbInfo.nw || prog.lbInfo.al)) {
+            let blocks = [];
+            if (prog.lbInfo.nw) blocks.push(`<div>Deine Noten im Lernbereich Naturwissenschaften (${prog.lbInfo.nw}) wurden zu einer gemeinsamen Lernbereichsnote zusammengefasst. Bei Kommastellen rundet das Tool zu deinen Gunsten. Wichtig: Die reale Note auf dem Zeugnis kann abweichen, da diese von der Zeugniskonferenz pädagogisch festgelegt wird.<br><strong class="block mt-1.5 text-blue-950">Angenommene Lernbereichsnote: ${prog.lbInfo.nwGrade}</strong></div>`);
+            if (prog.lbInfo.al) blocks.push(`<div>Deine Noten im Lernbereich Arbeitslehre (${prog.lbInfo.al}) wurden zu einer gemeinsamen Lernbereichsnote zusammengefasst. Bei Kommastellen rundet das Tool zu deinen Gunsten. Wichtig: Die reale Note auf dem Zeugnis kann abweichen, da diese von der Zeugniskonferenz pädagogisch festgelegt wird.<br><strong class="block mt-1.5 text-blue-950">Angenommene Lernbereichsnote: ${prog.lbInfo.alGrade}</strong></div>`);
+            compsHtml += `<div class="${compsHtml === '' ? 'mt-6 pt-5 border-t border-black/10' : 'mt-4'}"><div class="flex items-start gap-3 p-3.5 bg-blue-50/80 rounded-xl text-blue-900 text-xs font-medium border border-blue-200 animate-in"><svg class="h-5 w-5 shrink-0 mt-0.5 text-blue-600" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><div class="w-full">${blocks.join('<div class="my-3 border-t border-blue-200/50"></div>')}</div></div></div>`;
+        }
+        compsContainer.innerHTML = compsHtml;
+        banner.appendChild(template);
+        const missingSection = document.getElementById('missing-section');
+        if (prog.next) {
+            let missingListHtml = prog.missing.map(err => {
+                let msg = typeof err === 'string' ? err : err.message; let alts = typeof err === 'string' ? null : err.alternatives; let altHtml = '';
+                if (alts) {
+                    let altContent = typeof alts === 'string' ? `<p class="font-bold text-red-900 text-[13px]">${alts}</p>` : `<div class="space-y-2"><p class="font-bold text-red-900 text-[13px]">${alts.instruction}</p><ul class="list-disc pl-5 space-y-1.5 text-red-800">${alts.items.map((it, idx) => { let cleanText = String(it).replace(/^(ODER:\s*)+/, '').trim(); return idx > 0 ? `</ul><div class="text-[13px] font-bold text-red-900 mt-3 mb-2">oder</div><ul class="list-disc pl-5 space-y-1.5 text-red-800"><li>${cleanText}</li>` : `<li>${cleanText}</li>`; }).join('')}</ul></div>`;
+                    altHtml = `<details class="mt-2 group"><summary class="text-xs text-red-700 hover:text-red-900 font-bold flex items-center gap-1 transition-colors underline decoration-2 underline-offset-2 cursor-pointer list-none select-none"><span class="group-open:hidden">Wie kann ich mich verbessern?</span><span class="hidden group-open:inline">Hinweise ausblenden</span><svg class="h-3 w-3 group-open:rotate-180 transition-transform" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary><div class="mt-3 p-4 bg-white/80 rounded-xl text-xs font-medium text-red-950 border border-red-200 shadow-sm animate-in">${altContent}</div></details>`;
+                }
+                return `<div class="flex items-start gap-3 bg-red-50 p-4 rounded-2xl border border-red-100 shadow-sm transition-all hover:bg-red-50/80"><svg class="h-5 w-5 shrink-0 text-red-500 mt-0.5" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><div class="flex-1 text-slate-900"><span class="text-sm font-bold leading-relaxed">${msg}</span>${altHtml}</div></div>`;
+            }).join('');
+            missingSection.innerHTML = `<div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mt-6"><h3 class="text-lg font-bold text-slate-800 flex items-center gap-2 border-b border-slate-100 pb-3 mb-4"><div class="bg-amber-100 p-1.5 rounded-lg"><svg class="h-5 w-5 text-amber-700" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>Fehlende Voraussetzungen für: ${prog.next}</h3><div class="grid gap-3">${missingListHtml}</div></div>`;
+        } else missingSection.innerHTML = '';
+    }
+    document.addEventListener('DOMContentLoaded', () => { 
+        renderSubjects(); updatePrognosis(); 
+        document.querySelectorAll('.grade-btn').forEach(btn => btn.addEventListener('click', (e) => setGradeLevel(parseInt(e.target.dataset.level))));
+        document.getElementById('close-modal-btn').addEventListener('click', () => toggleModal(false));
+        document.getElementById('prognosis-banner').addEventListener('click', (e) => { if(e.target.closest('#open-modal-btn')) toggleModal(true); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !document.getElementById('rules-modal').classList.contains('hidden')) toggleModal(false); });
+    });
+</script>
+</body>
+</html>
