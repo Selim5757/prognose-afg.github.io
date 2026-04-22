@@ -135,7 +135,7 @@
             </div>
         </div>
     </footer>
-    <div id="rules-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" class="fixed inset-0 z-50 items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 hidden animate-in text-slate-900">
+     <div id="rules-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" class="fixed inset-0 z-50 items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 hidden animate-in text-slate-900">
         <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-slate-200 relative">
             <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.04] pointer-events-none z-0" id="logo-modal" aria-hidden="true"></div>
             <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/90 relative z-10 backdrop-blur-sm">
@@ -151,8 +151,8 @@
                  <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100 text-indigo-900 shadow-sm relative">
                     <svg class="h-5 w-5 absolute" style="top: 1rem; left: 1rem;" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                     <div class="text-center px-6">
-                        <h3 class="font-bold mb-1.5">Wichtige Grundregel</h3>
-                        <p class="font-medium leading-relaxed">Maximal 1 Hauptfach und 1 Nebenfach dürfen ausgeglichen werden.<br>Jede Ausgleichsnote darf nur für genau ein Defizit genutzt werden.</p>
+                        <h3 class="font-bold mb-1.5">Wichtige Grundregeln zum Ausgleich</h3>
+                        <p class="font-medium leading-relaxed">Ein Hauptfach darf ein Nebenfach ausgleichen.<br>Jede Ausgleichsnote darf nur für genau ein Defizit genutzt werden.</p>
                     </div>
                 </div>
                 <div class="space-y-2">
@@ -160,7 +160,7 @@
                     <ul class="list-disc pl-5 space-y-1.5 text-sm font-medium">
                         <li><strong>Kurse:</strong> Mindestens 3 E-Kurse.</li>
                         <li><strong>Noten:</strong> In allen Fächern mindestens Note 3 (im G-Kurs Note 2).</li>
-                        <li><strong>Defizite:</strong> Maximal 1 Defizit in den Hauptfächern und 1 in den Nebenfächern. Ein Ausgleich durch Note 2 ist erforderlich.</li>
+                        <li><strong>Defizite:</strong> Maximal 1 Defizit im Hauptfach und bis zu 3 Defizite in den Nebenfächern (Ausgleich erforderlich).</li>
                         <li><strong>Ausschluss:</strong> Keine 5 in den Hauptfächern und generell keine 6 erlaubt.</li>
                     </ul>
                 </div>
@@ -170,8 +170,8 @@
                         <li><strong>Kurse:</strong> Mindestens 2 E-Kurse.</li>
                         <li><strong>Noten:</strong> In allen Fächern mindestens Note 4 (im G-Kurs Note 3).</li>
                         <li><strong>Sonderregel:</strong> Es werden mindestens zwei Noten 3 in den Nebenfächern benötigt.</li>
-                        <li><strong>Defizite:</strong> Maximal 1 Defizit in den Hauptfächern und 1 in den Nebenfächern (Ausgleich erforderlich).</li>
-                        <li><strong>Ausschluss:</strong> Generell keine 6 erlaubt.</li>
+                        <li><strong>Defizite:</strong> Maximal 2 Defizite insgesamt, verteilt auf entweder ein Hauptfach und ein Nebenfach oder zwei Nebenfächer (Ausgleich erforderlich).</li>
+                        <li><strong>Ausschluss:</strong> Keine 5 im G-Kurs und generell keine 6 erlaubt.</li>
                     </ul>
                 </div>
                 <div class="space-y-2">
@@ -179,16 +179,16 @@
                     <ul class="list-disc pl-5 space-y-1.5 text-sm font-medium">
                         <li><strong>Noten:</strong> In allen Fächern mindestens Note 4.</li>
                         <li><strong>Vorteil:</strong> Eine Note 5 im E-Kurs wird wie eine Note 4 im G-Kurs gewertet.</li>
-                        <li><strong>Defizite:</strong> Maximal 2 Defizite insgesamt (davon höchstens 1 im Hauptfach). Ein Ausgleich ist erforderlich.</li>
-                        <li><strong>Ausschluss:</strong> Maximal eine 6 erlaubt (muss zwingend mit Note 2 ausgeglichen werden).</li>
+                        <li><strong>Defizite:</strong> Maximal 2 Defizite insgesamt (davon höchstens 1 im Hauptfach).</li>
+                        <li><strong>Ausschluss:</strong> Maximal eine 6 erlaubt (nur im Nebenfach).</li>
                     </ul>
                 </div>
                 <div class="space-y-2">
-                    <h3 class="font-bold text-red-800 bg-red-100 px-3 py-1.5 rounded-lg inline-block shadow-sm">ESA (HA 9) & Abgang</h3>
+                    <h3 class="font-bold text-red-800 bg-red-100 px-3 py-1.5 rounded-lg inline-block shadow-sm">ESA (HA 9)</h3>
                     <ul class="list-disc pl-5 space-y-1.5 text-sm font-medium">
                         <li><strong>Noten:</strong> In allen Fächern mindestens Note 4.</li>
-                        <li><strong>Defizite:</strong> Maximal 2 Defizite insgesamt (davon höchstens 1 im Hauptfach). Ein Ausgleich ist erforderlich.</li>
-                        <li><strong>Ausschluss:</strong> Generell keine 6 erlaubt.</li>
+                        <li><strong>Defizite:</strong> Maximal 2 Defizite insgesamt (davon höchstens 1 im Hauptfach).</li>
+                        <li><strong>Ausschluss:</strong> Maximal eine 6 erlaubt (nur im Nebenfach).</li>
                         <li><strong>Hinweis:</strong> Wer in Klasse 10 den EESA nicht erreicht, verlässt die Schule mit dem ESA.</li>
                     </ul>
                 </div>
